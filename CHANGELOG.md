@@ -9,6 +9,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-
+- Rename template repo.
 
 [Unreleased]: https://github.com/giantswarm/conditions/tree/master
