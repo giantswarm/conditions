@@ -46,27 +46,28 @@ const (
 	WaitingForControlPlaneWarningThresholdTime = 10 * time.Minute
 )
 
-// IsControlPlaneReadyTrue checks if specified object is in ControlPlaneReady
+// IsControlPlaneReadyTrue checks if specified cluster is in ControlPlaneReady
 // condition (if ControlPlaneReady condition is set with status True).
-func IsControlPlaneReadyTrue(object Object) bool {
-	return capiconditions.IsTrue(object, ControlPlaneReady)
+func IsControlPlaneReadyTrue(cluster *capi.Cluster) bool {
+	return capiconditions.IsTrue(cluster, ControlPlaneReady)
 }
 
-// IsControlPlaneReadyFalse checks if specified object is not in ControlPlaneReady
-// condition (if ControlPlaneReady condition is set with status False).
-func IsControlPlaneReadyFalse(object Object) bool {
-	return capiconditions.IsFalse(object, ControlPlaneReady)
+// IsControlPlaneReadyFalse checks if specified cluster is not in
+// ControlPlaneReady condition (if ControlPlaneReady condition is set with
+// status False).
+func IsControlPlaneReadyFalse(cluster *capi.Cluster) bool {
+	return capiconditions.IsFalse(cluster, ControlPlaneReady)
 }
 
 // IsControlPlaneReadyUnknown checks if it is unknown whether the specified
-// object is in ControlPlaneReady condition or not (if ControlPlaneReady
+// cluster is in ControlPlaneReady condition or not (if ControlPlaneReady
 // condition is not set, or it is set with status Unknown).
-func IsControlPlaneReadyUnknown(object Object) bool {
-	return capiconditions.IsUnknown(object, ControlPlaneReady)
+func IsControlPlaneReadyUnknown(cluster *capi.Cluster) bool {
+	return capiconditions.IsUnknown(cluster, ControlPlaneReady)
 }
 
 // ReconcileControlPlaneReady sets ControlPlaneReady condition on specified
-// object by mirroring Ready condition from specified control plane object.
+// cluster by mirroring Ready condition from specified control plane object.
 //
 // If specified control plane object is nil, object ControlPlaneReady will
 // be set with condition False and Reason ControlPlaneObjectNotFoundReason.
@@ -74,30 +75,30 @@ func IsControlPlaneReadyUnknown(object Object) bool {
 // If specified control plane object's Ready condition is not set, object
 // ControlPlaneReady will be set with condition False and reason
 // WaitingForControlPlane.
-func ReconcileControlPlaneReady(object Object, controlPlaneObject Object) {
+func ReconcileControlPlaneReady(cluster *capi.Cluster, controlPlaneObject *capi.Cluster) {
 	if controlPlaneObject == nil {
 		warningMessage :=
 			"Control plane object of type %T is not found for specified %T object %s/%s"
 
 		capiconditions.MarkFalse(
-			object,
+			cluster,
 			ControlPlaneReady,
 			ControlPlaneObjectNotFoundReason,
 			capi.ConditionSeverityWarning,
 			warningMessage,
-			controlPlaneObject, object, object.GetNamespace(), object.GetName())
+			controlPlaneObject, cluster, cluster.GetNamespace(), cluster.GetName())
 	}
 
-	objectAge := time.Since(object.GetCreationTimestamp().Time)
+	clusterAge := time.Since(cluster.GetCreationTimestamp().Time)
 	var fallbackSeverity capi.ConditionSeverity
 	fallbackWarningMessage := ""
-	if objectAge > WaitingForControlPlaneWarningThresholdTime {
+	if clusterAge > WaitingForControlPlaneWarningThresholdTime {
 		// Control plane should be reconciled soon after it has been created.
 		// If it's Ready condition is not set within 10 minutes, that means
 		// that something might be wrong, so we set object's ControlPlaneReady
 		// condition with severity Warning.
 		fallbackSeverity = capi.ConditionSeverityWarning
-		fallbackWarningMessage = fmt.Sprintf(" for more than %s", objectAge)
+		fallbackWarningMessage = fmt.Sprintf(" for more than %s", clusterAge)
 	} else {
 		// Otherwise, if it has been less than 10 minutes since object's
 		// creation, probably everything is good, and we just have to wait few
@@ -114,5 +115,5 @@ func ReconcileControlPlaneReady(object Object, controlPlaneObject Object) {
 		fmt.Sprintf("Waiting for control plane object of type %T to have Ready condition set%s",
 			controlPlaneObject, fallbackWarningMessage))
 
-	capiconditions.SetMirror(object, ControlPlaneReady, controlPlaneObject, fallbackToFalse)
+	capiconditions.SetMirror(cluster, ControlPlaneReady, controlPlaneObject, fallbackToFalse)
 }

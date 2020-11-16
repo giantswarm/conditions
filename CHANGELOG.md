@@ -11,5 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Rename template repo.
 - Add provider-independent conditions: Creating, Upgrading, InfrastructureReady, ControlPlaneReady, NodePoolsReady
+- Add Ready condition check functions
 
 [Unreleased]: https://github.com/giantswarm/conditions/tree/master
