@@ -8,20 +8,20 @@ import (
 	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha3"
 )
 
-func Test_IsReadyTrue(t *testing.T) {
+func Test_IsCreatingTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         Object
 	}{
 		{
-			name:           "case 0: IsReadyTrue returns true for CR with condition Ready with status True",
+			name:           "case 0: IsCreatingTrue returns true for CR with condition Creating with status True",
 			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -29,13 +29,13 @@ func Test_IsReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsReadyTrue returns false for CR with condition Ready with status False",
+			name:           "case 1: IsCreatingTrue returns false for CR with condition Creating with status False",
 			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -43,13 +43,13 @@ func Test_IsReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsReadyTrue returns false for CR with condition Ready with status Unknown",
+			name:           "case 2: IsCreatingTrue returns false for CR with condition Creating with status Unknown",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -57,23 +57,23 @@ func Test_IsReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsReadyTrue returns false for CR without condition Ready",
+			name:           "case 3: IsCreatingTrue returns false for CR without condition Creating",
 			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{},
 				},
 			},
 		},
 		{
-			name:           "case 4: IsReadyTrue returns false for CR with condition Ready with unsupported status",
+			name:           "case 4: IsCreatingTrue returns false for CR with condition Creating with unsupported status",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
-							Status: corev1.ConditionStatus("SomeUnsupportedValue"),
+							Type:   Creating,
+							Status: corev1.ConditionStatus("AnotherUnsupportedValue"),
 						},
 					},
 				},
@@ -85,7 +85,7 @@ func Test_IsReadyTrue(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsReadyTrue(tc.object)
+			result := IsCreatingTrue(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
@@ -94,20 +94,20 @@ func Test_IsReadyTrue(t *testing.T) {
 	}
 }
 
-func Test_IsReadyFalse(t *testing.T) {
+func Test_IsCreatingFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         Object
 	}{
 		{
-			name:           "case 0: IsReadyFalse returns false for CR with condition Ready with status True",
+			name:           "case 0: IsCreatingFalse returns false for CR with condition Creating with status True",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -115,13 +115,13 @@ func Test_IsReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsReadyFalse returns true for CR with condition Ready with status False",
+			name:           "case 1: IsCreatingFalse returns true for CR with condition Creating with status False",
 			expectedResult: true,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -129,13 +129,13 @@ func Test_IsReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsReadyFalse returns false for CR with condition Ready with status Unknown",
+			name:           "case 2: IsCreatingFalse returns false for CR with condition Creating with status Unknown",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -143,23 +143,23 @@ func Test_IsReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsReadyFalse returns false for CR without condition Ready",
+			name:           "case 3: IsCreatingFalse returns false for CR without condition Creating",
 			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{},
 				},
 			},
 		},
 		{
-			name:           "case 4: IsReadyFalse returns false for CR with condition Ready with unsupported status",
+			name:           "case 4: IsCreatingFalse returns false for CR with condition Creating with unsupported status",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capiexp.MachinePool{
+				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
-							Status: corev1.ConditionStatus("ShinyNewStatusHere"),
+							Type:   Creating,
+							Status: corev1.ConditionStatus(""),
 						},
 					},
 				},
@@ -171,7 +171,7 @@ func Test_IsReadyFalse(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsReadyFalse(tc.object)
+			result := IsCreatingFalse(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
@@ -180,20 +180,20 @@ func Test_IsReadyFalse(t *testing.T) {
 	}
 }
 
-func Test_IsReadyUnknown(t *testing.T) {
+func Test_IsCreatingUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         Object
 	}{
 		{
-			name:           "case 0: IsReadyUnknown returns false for CR with condition Ready with status True",
+			name:           "case 0: IsCreatingUnknown returns false for CR with condition Creating with status True",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -201,13 +201,13 @@ func Test_IsReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsReadyUnknown returns false for CR with condition Ready with status False",
+			name:           "case 1: IsCreatingUnknown returns false for CR with condition Creating with status False",
 			expectedResult: false,
 			object: &capiexp.MachinePool{
 				Status: capiexp.MachinePoolStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -215,13 +215,13 @@ func Test_IsReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsReadyUnknown returns true for CR with condition Ready with status Unknown",
+			name:           "case 2: IsCreatingUnknown returns true for CR with condition Creating with status Unknown",
 			expectedResult: true,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
+							Type:   Creating,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -229,7 +229,7 @@ func Test_IsReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsReadyUnknown returns true for CR without condition Ready",
+			name:           "case 3: IsCreatingUnknown returns true for CR without condition Creating",
 			expectedResult: true,
 			object: &capiexp.MachinePool{
 				Status: capiexp.MachinePoolStatus{
@@ -238,14 +238,14 @@ func Test_IsReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 4: IsReadyUnknown returns false for CR with condition Ready with unsupported status",
+			name:           "case 4: IsCreatingUnknown returns false for CR with condition Creating with unsupported status",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   capi.ReadyCondition,
-							Status: corev1.ConditionStatus("IDonTKnowWhatIAmDoing"),
+							Type:   Creating,
+							Status: corev1.ConditionStatus("BrandNewStatusHere"),
 						},
 					},
 				},
@@ -257,7 +257,7 @@ func Test_IsReadyUnknown(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsReadyUnknown(tc.object)
+			result := IsCreatingUnknown(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
