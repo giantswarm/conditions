@@ -34,8 +34,21 @@ func IsCreatingTrue(object Object) bool {
 
 // IsCreatingFalse checks if specified object is not in Creating condition (if
 // Creating condition is set with status False).
-func IsCreatingFalse(object Object) bool {
-	return capiconditions.IsFalse(object, Creating)
+func IsCreatingFalse(object Object, checkOptions ...CheckOption) bool {
+	creating := capiconditions.Get(object, Creating)
+	if !IsFalse(creating) {
+		// Creating condition is not set or it does not have status False
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(creating) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsCreatingUnknown checks if it is unknown whether the specified object is in
