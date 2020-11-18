@@ -265,3 +265,22 @@ func Test_IsCreatingUnknown(t *testing.T) {
 		})
 	}
 }
+
+func Test_MarkCreatingTrue_SetsCreatingConditionStatusToTrue(t *testing.T) {
+	testName := "MarkCreatingTrue sets Creating condition status to True"
+	t.Run(testName, func(t *testing.T) {
+		// arrange
+		t.Log(testName)
+		cluster := &capi.Cluster{}
+
+		// act
+		MarkCreatingTrue(cluster)
+
+		// assert
+		if !IsCreatingTrue(cluster) {
+			got := getGotConditionStatusString(cluster, Creating)
+			t.Logf("expected that Creating condition status is set to True, got %s", got)
+			t.Fail()
+		}
+	})
+}
