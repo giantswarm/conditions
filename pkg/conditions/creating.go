@@ -33,7 +33,15 @@ func IsCreatingTrue(object Object) bool {
 }
 
 // IsCreatingFalse checks if specified object is not in Creating condition (if
-// Creating condition is set with status False).
+// Creating condition is set with status False) and if optionally specified
+// checks are successful.
+//
+// Examples:
+//
+//    IsCreatingFalse(cluster)
+//    IsCreatingFalse(cluster, WithCreationCompletedReason())
+//    IsCreatingFalse(cluster, WithExistingObjectReason())
+//
 func IsCreatingFalse(object Object, checkOptions ...CheckOption) bool {
 	creating := capiconditions.Get(object, Creating)
 	if !IsFalse(creating) {
@@ -56,6 +64,18 @@ func IsCreatingFalse(object Object, checkOptions ...CheckOption) bool {
 // with status Unknown).
 func IsCreatingUnknown(object Object) bool {
 	return capiconditions.IsUnknown(object, Creating)
+}
+
+// WithCreationCompletedReason returns a CheckOption that checks if condition
+// reason is set to CreationCompleted.
+func WithCreationCompletedReason() CheckOption {
+	return WithReason(CreationCompletedReason)
+}
+
+// WithExistingObjectReason returns a CheckOption that checks if condition
+// reason is set to ExistingObject.
+func WithExistingObjectReason() CheckOption {
+	return WithReason(ExistingObjectReason)
 }
 
 // MarkCreatingTrue sets Creating condition with status True.
