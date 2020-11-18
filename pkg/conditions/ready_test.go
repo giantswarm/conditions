@@ -45,8 +45,8 @@ func Test_IsReadyTrue(t *testing.T) {
 		{
 			name:           "case 2: IsReadyTrue returns false for CR with condition Ready with status Unknown",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capi.Machine{
+				Status: capi.MachineStatus{
 					Conditions: capi.Conditions{
 						{
 							Type:   capi.ReadyCondition,
@@ -154,8 +154,8 @@ func Test_IsReadyFalse(t *testing.T) {
 		{
 			name:           "case 4: IsReadyFalse returns false for CR with condition Ready with unsupported status",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capi.Machine{
+				Status: capi.MachineStatus{
 					Conditions: capi.Conditions{
 						{
 							Type:   capi.ReadyCondition,
@@ -189,8 +189,8 @@ func Test_IsReadyUnknown(t *testing.T) {
 		{
 			name:           "case 0: IsReadyUnknown returns false for CR with condition Ready with status True",
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
+			object: &capi.Machine{
+				Status: capi.MachineStatus{
 					Conditions: capi.Conditions{
 						{
 							Type:   capi.ReadyCondition,
