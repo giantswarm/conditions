@@ -87,7 +87,11 @@ func Test_IsCreatingTrue(t *testing.T) {
 
 			result := IsCreatingTrue(tc.object)
 			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+				t.Logf(
+					"expected IsCreatingTrue to return %t, got %t for %s",
+					tc.expectedResult,
+					result,
+					conditionString(tc.object, Creating))
 				t.Fail()
 			}
 		})
@@ -96,10 +100,9 @@ func Test_IsCreatingTrue(t *testing.T) {
 
 func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
 	testCases := []struct {
-		name                   string
-		checkOptionDescription string
-		object                 Object
-		checkOptions           []CheckOption
+		name         string
+		object       Object
+		checkOptions []CheckOption
 	}{
 		{
 			name: "case 0: CR with condition Creating with Status=False",
@@ -116,8 +119,7 @@ func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
 			checkOptions: []CheckOption{},
 		},
 		{
-			name:                   "case 1: CR with condition Creating with Status=False, Reason=CreationCompleted",
-			checkOptionDescription: " (Reason=CreationCompleted)",
+			name: "case 1: CR with condition Creating with Status=False, Reason=CreationCompleted with check option WithCreationCompletedReason()",
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
@@ -134,8 +136,7 @@ func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
 			},
 		},
 		{
-			name:                   "case 2: CR with condition Creating with Status=False, Reason=ExistingObject",
-			checkOptionDescription: " (Reason=ExistingObject)",
+			name: "case 2: CR with condition Creating with Status=False, Reason=ExistingObject with check option WithExistingObjectReason()",
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
@@ -160,8 +161,7 @@ func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
 			result := IsCreatingFalse(tc.object, tc.checkOptions...)
 			if result != true {
 				t.Logf(
-					"expected Creating condition with Status=False%s, got %s",
-					tc.checkOptionDescription,
+					"expected IsCreatingFalse to return true, got false for %s",
 					conditionString(tc.object, Creating))
 
 				t.Fail()
@@ -353,7 +353,11 @@ func Test_IsCreatingUnknown(t *testing.T) {
 
 			result := IsCreatingUnknown(tc.object)
 			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+				t.Logf(
+					"expected IsCreatingUnknown to return %t, got %t for %s",
+					tc.expectedResult,
+					result,
+					conditionString(tc.object, Creating))
 				t.Fail()
 			}
 		})
