@@ -7,20 +7,20 @@ import (
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
 
-func Test_IsControlPlaneReadyTrue(t *testing.T) {
+func Test_IsNodePoolsReadyTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         *capi.Cluster
 	}{
 		{
-			name:           "case 0: IsControlPlaneReadyTrue returns true for Cluster with condition ControlPlaneReady with status True",
+			name:           "case 0: IsNodePoolsReadyTrue returns true for Cluster with condition NodePoolsReady with status True",
 			expectedResult: true,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -28,13 +28,13 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with status False",
+			name:           "case 1: IsNodePoolsReadyTrue returns false for Cluster with condition NodePoolsReady with status False",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -42,13 +42,13 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with status Unknown",
+			name:           "case 2: IsNodePoolsReadyTrue returns false for Cluster with condition NodePoolsReady with status Unknown",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -56,7 +56,7 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsControlPlaneReadyTrue returns false for Cluster without condition ControlPlaneReady",
+			name:           "case 3: IsNodePoolsReadyTrue returns false for Cluster without condition NodePoolsReady",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
@@ -65,13 +65,13 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 4: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with unsupported status",
+			name:           "case 4: IsNodePoolsReadyTrue returns false for Cluster with condition NodePoolsReady with unsupported status",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionStatus("AnotherUnsupportedValue"),
 						},
 					},
@@ -84,7 +84,7 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsControlPlaneReadyTrue(tc.object)
+			result := IsNodePoolsReadyTrue(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
@@ -93,20 +93,20 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 	}
 }
 
-func Test_IsControlPlaneReadyFalse(t *testing.T) {
+func Test_IsNodePoolsReadyFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         *capi.Cluster
 	}{
 		{
-			name:           "case 0: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with status True",
+			name:           "case 0: IsNodePoolsReadyFalse returns false for Cluster with condition NodePoolsReady with status True",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -114,13 +114,13 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsControlPlaneReadyFalse returns true for Cluster with condition ControlPlaneReady with status False",
+			name:           "case 1: IsNodePoolsReadyFalse returns true for Cluster with condition NodePoolsReady with status False",
 			expectedResult: true,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -128,13 +128,13 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with status Unknown",
+			name:           "case 2: IsNodePoolsReadyFalse returns false for Cluster with condition NodePoolsReady with status Unknown",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -142,7 +142,7 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsControlPlaneReadyFalse returns false for Cluster without condition ControlPlaneReady",
+			name:           "case 3: IsNodePoolsReadyFalse returns false for Cluster without condition NodePoolsReady",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
@@ -151,13 +151,13 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 4: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with unsupported status",
+			name:           "case 4: IsNodePoolsReadyFalse returns false for Cluster with condition NodePoolsReady with unsupported status",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionStatus(""),
 						},
 					},
@@ -170,7 +170,7 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsControlPlaneReadyFalse(tc.object)
+			result := IsNodePoolsReadyFalse(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
@@ -179,20 +179,20 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 	}
 }
 
-func Test_IsControlPlaneReadyUnknown(t *testing.T) {
+func Test_IsNodePoolsReadyUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
 		object         *capi.Cluster
 	}{
 		{
-			name:           "case 0: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with status True",
+			name:           "case 0: IsNodePoolsReadyUnknown returns false for Cluster with condition NodePoolsReady with status True",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionTrue,
 						},
 					},
@@ -200,13 +200,13 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 1: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with status False",
+			name:           "case 1: IsNodePoolsReadyUnknown returns false for Cluster with condition NodePoolsReady with status False",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionFalse,
 						},
 					},
@@ -214,13 +214,13 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 2: IsControlPlaneReadyUnknown returns true for Cluster with condition ControlPlaneReady with status Unknown",
+			name:           "case 2: IsNodePoolsReadyUnknown returns true for Cluster with condition NodePoolsReady with status Unknown",
 			expectedResult: true,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionUnknown,
 						},
 					},
@@ -228,7 +228,7 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 3: IsControlPlaneReadyUnknown returns true for Cluster without condition ControlPlaneReady",
+			name:           "case 3: IsNodePoolsReadyUnknown returns true for Cluster without condition NodePoolsReady",
 			expectedResult: true,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
@@ -237,13 +237,13 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 			},
 		},
 		{
-			name:           "case 4: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with unsupported status",
+			name:           "case 4: IsNodePoolsReadyUnknown returns false for Cluster with condition NodePoolsReady with unsupported status",
 			expectedResult: false,
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   ControlPlaneReady,
+							Type:   NodePoolsReady,
 							Status: corev1.ConditionStatus("YouShallNotPass"),
 						},
 					},
@@ -256,7 +256,7 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsControlPlaneReadyUnknown(tc.object)
+			result := IsNodePoolsReadyUnknown(tc.object)
 			if result != tc.expectedResult {
 				t.Logf("expected %t, got %t", tc.expectedResult, result)
 				t.Fail()
