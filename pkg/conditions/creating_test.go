@@ -382,3 +382,45 @@ func Test_MarkCreatingTrue_SetsCreatingConditionStatusToTrue(t *testing.T) {
 		}
 	})
 }
+
+func Test_MarkCreatingFalseWithCreationCompleted(t *testing.T) {
+	testName := "Creating condition is set with Status=False, Severity=Info, Reason=CreationCompleted"
+	t.Run(testName, func(t *testing.T) {
+		// arrange
+		t.Log(testName)
+		cluster := &capi.Cluster{}
+
+		// act
+		MarkCreatingFalseWithCreationCompleted(cluster)
+
+		// assert
+		expected := IsCreatingFalse(cluster, WithSeverityInfo(), WithCreationCompletedReason())
+		if !expected {
+			t.Logf(
+				"expected that Creating condition is set with Status=False, Severity=Info, Reason=CreationCompleted, got %s",
+				conditionString(cluster, Creating))
+			t.Fail()
+		}
+	})
+}
+
+func Test_MarkCreatingFalseForExistingObject(t *testing.T) {
+	testName := "Creating condition is set with Status=False, Severity=Info, Reason=ExistingObject"
+	t.Run(testName, func(t *testing.T) {
+		// arrange
+		t.Log(testName)
+		cluster := &capi.Cluster{}
+
+		// act
+		MarkCreatingFalseForExistingObject(cluster)
+
+		// assert
+		expected := IsCreatingFalse(cluster, WithSeverityInfo(), WithExistingObjectReason())
+		if !expected {
+			t.Logf(
+				"expected that Creating condition is set with Status=False, Severity=Info, Reason=ExistingObject, got %s",
+				conditionString(cluster, Creating))
+			t.Fail()
+		}
+	})
+}
