@@ -8,7 +8,7 @@ import (
 	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha3"
 )
 
-func Test_IsCreatingTrue(t *testing.T) {
+func TestIsCreatingTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
@@ -98,7 +98,7 @@ func Test_IsCreatingTrue(t *testing.T) {
 	}
 }
 
-func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
+func TestIsCreatingFalseReturnsTrue(t *testing.T) {
 	testCases := []struct {
 		name         string
 		object       Object
@@ -170,7 +170,7 @@ func Test_IsCreatingFalse_ReturnsTrue(t *testing.T) {
 	}
 }
 
-func Test_IsCreatingFalse_ReturnsFalse(t *testing.T) {
+func TestIsCreatingFalseReturnsFalse(t *testing.T) {
 	testCases := []struct {
 		name         string
 		object       Object
@@ -274,7 +274,7 @@ func Test_IsCreatingFalse_ReturnsFalse(t *testing.T) {
 	}
 }
 
-func Test_IsCreatingUnknown(t *testing.T) {
+func TestIsCreatingUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
@@ -364,7 +364,7 @@ func Test_IsCreatingUnknown(t *testing.T) {
 	}
 }
 
-func Test_MarkCreatingTrue_SetsCreatingConditionStatusToTrue(t *testing.T) {
+func TestMarkCreatingTrue(t *testing.T) {
 	testName := "MarkCreatingTrue sets Creating condition status to True"
 	t.Run(testName, func(t *testing.T) {
 		// arrange
@@ -383,7 +383,7 @@ func Test_MarkCreatingTrue_SetsCreatingConditionStatusToTrue(t *testing.T) {
 	})
 }
 
-func Test_MarkCreatingFalseWithCreationCompleted(t *testing.T) {
+func TestMarkCreatingFalseWithCreationCompleted(t *testing.T) {
 	testName := "Creating condition is set with Status=False, Severity=Info, Reason=CreationCompleted"
 	t.Run(testName, func(t *testing.T) {
 		// arrange
@@ -404,7 +404,7 @@ func Test_MarkCreatingFalseWithCreationCompleted(t *testing.T) {
 	})
 }
 
-func Test_MarkCreatingFalseForExistingObject(t *testing.T) {
+func TestMarkCreatingFalseForExistingObject(t *testing.T) {
 	testName := "Creating condition is set with Status=False, Severity=Info, Reason=ExistingObject"
 	t.Run(testName, func(t *testing.T) {
 		// arrange
