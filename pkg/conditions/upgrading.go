@@ -34,9 +34,30 @@ func IsUpgradingTrue(object Object) bool {
 }
 
 // IsUpgradingFalse checks if specified object is not in Upgrading condition (if
-// Upgrading condition is set with status False).
-func IsUpgradingFalse(object Object) bool {
-	return capiconditions.IsFalse(object, Upgrading)
+// Upgrading condition is set with status False) and if optionally specified
+// checks are successful.
+//
+// Examples:
+//
+//    IsUpgradingFalse(cluster)
+//    IsUpgradingFalse(cluster, WithUpgradeCompletedReason())
+//    IsUpgradingFalse(cluster, WithUpgradeNotStartedReason())
+//
+func IsUpgradingFalse(object Object, checkOptions ...CheckOption) bool {
+	upgrading := capiconditions.Get(object, Upgrading)
+	if !IsFalse(upgrading) {
+		// Upgrading condition is not set or it does not have status False
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(upgrading) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsUpgradingUnknown checks if it is unknown whether the specified object is in
@@ -44,6 +65,18 @@ func IsUpgradingFalse(object Object) bool {
 // with status Unknown).
 func IsUpgradingUnknown(object Object) bool {
 	return capiconditions.IsUnknown(object, Upgrading)
+}
+
+// WithUpgradeCompletedReason returns a CheckOption that checks if condition
+// reason is set to UpgradeCompleted.
+func WithUpgradeCompletedReason() CheckOption {
+	return WithReason(UpgradeCompletedReason)
+}
+
+// WithUpgradeNotStartedReason returns a CheckOption that checks if condition
+// reason is set to UpgradeNotStarted.
+func WithUpgradeNotStartedReason() CheckOption {
+	return WithReason(UpgradeNotStartedReason)
 }
 
 // MarkUpgradingTrue sets Upgrading condition with status True.
