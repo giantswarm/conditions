@@ -86,7 +86,7 @@ func TestIsUpgradingFalse(t *testing.T) {
 			expectedOutput: false,
 		},
 		{
-			name: "case 5: CR with condition Upgrading(Status=False, Reason=\"UpgradeCompleted\") for check option WithUpgradeCompletedReason()",
+			name: "case 5: CR with condition Upgrading(Status=False, Reason=\"UpgradeCompleted\") for check options WithUpgradeCompletedReason() and WithSeverityInfo()",
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
@@ -94,17 +94,16 @@ func TestIsUpgradingFalse(t *testing.T) {
 							Type:   Upgrading,
 							Status: corev1.ConditionFalse,
 							Reason: UpgradeCompletedReason,
+							Severity: capi.ConditionSeverityInfo,
 						},
 					},
 				},
 			},
-			checkOptions: []CheckOption{
-				WithUpgradeCompletedReason(),
-			},
+			checkOptions:   []CheckOption{WithUpgradeCompletedReason(), WithSeverityInfo()},
 			expectedOutput: true,
 		},
 		{
-			name: "case 6: CR with condition Upgrading(Status=False, Reason=\"ForReasons\") for check option WithUpgradeNotStartedReason()",
+			name: "case 6: CR with condition Upgrading(Status=False, Reason=\"ForReasons\") for check options WithUpgradeNotStartedReason() and WithSeverityInfo()",
 			object: &capi.Cluster{
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
@@ -112,13 +111,12 @@ func TestIsUpgradingFalse(t *testing.T) {
 							Type:   Upgrading,
 							Status: corev1.ConditionFalse,
 							Reason: UpgradeNotStartedReason,
+							Severity: capi.ConditionSeverityInfo,
 						},
 					},
 				},
 			},
-			checkOptions: []CheckOption{
-				WithUpgradeNotStartedReason(),
-			},
+			checkOptions:   []CheckOption{WithUpgradeNotStartedReason(), WithSeverityInfo()},
 			expectedOutput: true,
 		},
 		{
