@@ -154,38 +154,38 @@ func TestIsUnknown(t *testing.T) {
 	}
 }
 
-type withReasonTestInput struct {
-	condition     *capi.Condition
-	reasonToCheck string
+type withCheckTestInput struct {
+	condition    *capi.Condition
+	valueToCheck string
 }
 
 func TestWithReason(t *testing.T) {
 	testCases := []struct {
 		name           string
-		input          withReasonTestInput
+		input          withCheckTestInput
 		expectedOutput bool
 	}{
 		{
 			name: "case 0: Check for correct reason returns true",
-			input: withReasonTestInput{
-				condition:     &capi.Condition{Reason: "ForReasons"},
-				reasonToCheck: "ForReasons",
+			input: withCheckTestInput{
+				condition:    &capi.Condition{Reason: "ForReasons"},
+				valueToCheck: "ForReasons",
 			},
 			expectedOutput: true,
 		},
 		{
 			name: "case 1: Check for incorrect reason returns false",
-			input: withReasonTestInput{
-				condition:     &capi.Condition{Reason: "SomethingElse"},
-				reasonToCheck: "Something",
+			input: withCheckTestInput{
+				condition:    &capi.Condition{Reason: "SomethingElse"},
+				valueToCheck: "Something",
 			},
 			expectedOutput: false,
 		},
 		{
-			name: "case 1: Check for nil condition returns false",
-			input: withReasonTestInput{
-				condition:     nil,
-				reasonToCheck: "Something",
+			name: "case 2: Check for nil condition returns false",
+			input: withCheckTestInput{
+				condition:    nil,
+				valueToCheck: "Something",
 			},
 			expectedOutput: false,
 		},
@@ -196,7 +196,7 @@ func TestWithReason(t *testing.T) {
 			t.Log(tc.name)
 
 			// act
-			withReasonCheck := WithReason(tc.input.reasonToCheck)
+			withReasonCheck := WithReason(tc.input.valueToCheck)
 			output := withReasonCheck(tc.input.condition)
 
 			// assert
@@ -206,14 +206,133 @@ func TestWithReason(t *testing.T) {
 					t.Logf(
 						"expected %t for %q (WithReason param) == %q (condition Reason field), got %t",
 						tc.expectedOutput,
-						tc.input.reasonToCheck,
+						tc.input.valueToCheck,
 						tc.input.condition.Reason,
 						output)
 				} else {
 					t.Logf(
 						"expected %t for %q (WithReason param) when checking nil condition, got %t",
 						tc.expectedOutput,
-						tc.input.reasonToCheck,
+						tc.input.valueToCheck,
+						output)
+				}
+
+				t.Fail()
+			}
+		})
+	}
+}
+
+type withSeverityCheckTestCase struct {
+	name           string
+	input          withSeverityInput
+	expectedOutput bool
+}
+type withSeverityInput struct {
+	condition *capi.Condition
+	check     capi.ConditionSeverity
+}
+
+func newWithSeverityInput(condition *capi.Condition, check capi.ConditionSeverity) withSeverityInput {
+	return withSeverityInput{
+		condition: condition,
+		check:     check,
+	}
+}
+
+var (
+	conditionWithSeverityInfo    = &capi.Condition{Severity: capi.ConditionSeverityInfo}
+	conditionWithSeverityWarning = &capi.Condition{Severity: capi.ConditionSeverityWarning}
+	conditionWithSeverityError   = &capi.Condition{Severity: capi.ConditionSeverityError}
+	conditionWithSeverityNone    = &capi.Condition{Severity: capi.ConditionSeverityNone}
+)
+
+func TestWithSeverity(t *testing.T) {
+	testCases := []withSeverityCheckTestCase{
+		{
+			name:           "case 0: Check for correct severity returns true",
+			input:          newWithSeverityInput(conditionWithSeverityInfo, capi.ConditionSeverityInfo),
+			expectedOutput: true,
+		},
+		{
+			name:           "case 1: Check for correct severity returns true",
+			input:          newWithSeverityInput(conditionWithSeverityNone, capi.ConditionSeverityNone),
+			expectedOutput: true,
+		},
+		{
+			name:           "case 2: Check for incorrect severity returns false",
+			input:          newWithSeverityInput(conditionWithSeverityError, capi.ConditionSeverityWarning),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 3: Check for incorrect severity returns false",
+			input:          newWithSeverityInput(conditionWithSeverityNone, capi.ConditionSeverityInfo),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 4: Check for incorrect severity returns false",
+			input:          newWithSeverityInput(conditionWithSeverityWarning, capi.ConditionSeverityNone),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 5: Check for severity Info for nil condition returns false",
+			input:          newWithSeverityInput(nil, capi.ConditionSeverityInfo),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 6: Check for severity Warning for nil condition returns false",
+			input:          newWithSeverityInput(nil, capi.ConditionSeverityWarning),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 7: Check for severity Error for nil condition returns false",
+			input:          newWithSeverityInput(nil, capi.ConditionSeverityError),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 8: Check for severity None for nil condition returns false",
+			input:          newWithSeverityInput(nil, capi.ConditionSeverityNone),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 9: Check for unsupported severity returns false",
+			input:          newWithSeverityInput(conditionWithSeverityWarning, "Fatal"),
+			expectedOutput: false,
+		},
+		{
+			name:           "case 10: Check when unsupported severity is set returns false",
+			input:          newWithSeverityInput(&capi.Condition{Severity: "Burning"}, capi.ConditionSeverityNone),
+			expectedOutput: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// arrange
+			condition := tc.input.condition
+			expectedSeverity := tc.input.check
+
+			// act
+			withSeverityCheck := WithSeverity(expectedSeverity)
+			output := withSeverityCheck(condition)
+
+			// assert
+			if output != tc.expectedOutput {
+
+				if condition != nil {
+					t.Logf(
+						"expected %t for %q (WithSeverity param) == %q (condition Severity field), got %t",
+						tc.expectedOutput,
+						expectedSeverity,
+						condition.Severity,
+						output)
+				} else {
+					t.Logf(
+						"expected %t for %q (WithSeverity param) when checking nil condition, got %t",
+						tc.expectedOutput,
+						expectedSeverity,
 						output)
 				}
 
