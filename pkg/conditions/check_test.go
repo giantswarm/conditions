@@ -153,3 +153,72 @@ func TestIsUnknown(t *testing.T) {
 		})
 	}
 }
+
+type withReasonTestInput struct {
+	condition     *capi.Condition
+	reasonToCheck string
+}
+
+func TestWithReason(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          withReasonTestInput
+		expectedOutput bool
+	}{
+		{
+			name: "case 0: Check for correct reason returns true",
+			input: withReasonTestInput{
+				condition:     &capi.Condition{Reason: "ForReasons"},
+				reasonToCheck: "ForReasons",
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "case 1: Check for incorrect reason returns false",
+			input: withReasonTestInput{
+				condition:     &capi.Condition{Reason: "SomethingElse"},
+				reasonToCheck: "Something",
+			},
+			expectedOutput: false,
+		},
+		{
+			name: "case 1: Check for nil condition returns false",
+			input: withReasonTestInput{
+				condition:     nil,
+				reasonToCheck: "Something",
+			},
+			expectedOutput: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// act
+			withReasonCheck := WithReason(tc.input.reasonToCheck)
+			output := withReasonCheck(tc.input.condition)
+
+			// assert
+			if output != tc.expectedOutput {
+
+				if tc.input.condition != nil {
+					t.Logf(
+						"expected %t for %q (WithReason param) == %q (condition Reason field), got %t",
+						tc.expectedOutput,
+						tc.input.reasonToCheck,
+						tc.input.condition.Reason,
+						output)
+				} else {
+					t.Logf(
+						"expected %t for %q (WithReason param) when checking nil condition, got %t",
+						tc.expectedOutput,
+						tc.input.reasonToCheck,
+						output)
+				}
+
+				t.Fail()
+			}
+		})
+	}
+}
