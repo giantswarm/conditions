@@ -315,24 +315,90 @@ func TestWithSeverity(t *testing.T) {
 			expectedSeverity := tc.input.check
 
 			// act
-			withSeverityCheck := WithSeverity(expectedSeverity)
-			output := withSeverityCheck(condition)
+			check := WithSeverity(expectedSeverity)
+			output := check(condition)
 
 			// assert
 			if output != tc.expectedOutput {
 
 				if condition != nil {
 					t.Logf(
-						"expected %t for %q (WithSeverity param) == %q (condition Severity field), got %t",
+						"expected %t for WithSeverity(%q) check for condition with Severity=%q), got %t",
 						tc.expectedOutput,
 						expectedSeverity,
 						condition.Severity,
 						output)
 				} else {
 					t.Logf(
-						"expected %t for %q (WithSeverity param) when checking nil condition, got %t",
+						"expected %t for WithSeverity(%q) check for nil condition, got %t",
 						tc.expectedOutput,
 						expectedSeverity,
+						output)
+				}
+
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestWithSeverityInfo(t *testing.T) {
+	testCases := []struct{
+		name string
+		input *capi.Condition
+		expectedOutput bool
+	} {
+		{
+			name: "case 0: Check for condition with severity Info returns true",
+			input: conditionWithSeverityInfo,
+			expectedOutput: true,
+		},
+		{
+			name: "case 1: Check for condition with severity Warning returns false",
+			input: conditionWithSeverityWarning,
+			expectedOutput: false,
+		},
+		{
+			name: "case 2: Check for condition with severity Error returns false",
+			input: conditionWithSeverityError,
+			expectedOutput: false,
+		},
+		{
+			name: "case 3: Check for condition with severity None returns false",
+			input: conditionWithSeverityNone,
+			expectedOutput: false,
+		},
+		{
+			name: "case 4: Check for nil condition returns false",
+			input: nil,
+			expectedOutput: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// arrange
+			condition := tc.input
+
+			// act
+			check := WithSeverityInfo()
+			output := check(condition)
+
+			// assert
+			if output != tc.expectedOutput {
+
+				if condition != nil {
+					t.Logf(
+						"expected %t for WithSeverityInfo() check for condition with Severity field %q, got %t",
+						tc.expectedOutput,
+						condition.Severity,
+						output)
+				} else {
+					t.Logf(
+						"expected %t for WithSeverityInfo() check for nil condition, got %t",
+						tc.expectedOutput,
 						output)
 				}
 
