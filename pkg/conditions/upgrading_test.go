@@ -4,80 +4,38 @@ import (
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
-	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
-	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha3"
 )
 
 func TestIsUpgradingTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedResult bool
 		object         Object
+		expectedOutput bool
 	}{
 		{
 			name:           "case 0: IsUpgradingTrue returns true for CR with condition Upgrading with status True",
-			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionTrue),
+			expectedOutput: true,
 		},
 		{
 			name:           "case 1: IsUpgradingTrue returns false for CR with condition Upgrading with status False",
-			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
+			object:         machinePoolWith(Upgrading, corev1.ConditionFalse),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 2: IsUpgradingTrue returns false for CR with condition Upgrading with status Unknown",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionUnknown),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 3: IsUpgradingTrue returns false for CR without condition Upgrading",
-			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
+			object:         machinePoolWithoutConditions(),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 4: IsUpgradingTrue returns false for CR with condition Upgrading with unsupported status",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionStatus("SomeUnsupportedValue"),
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionStatus("SomeUnsupportedValue")),
+			expectedOutput: false,
 		},
 	}
 
@@ -86,8 +44,8 @@ func TestIsUpgradingTrue(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsUpgradingTrue(tc.object)
-			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+			if result != tc.expectedOutput {
+				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
 			}
 		})
@@ -97,73 +55,34 @@ func TestIsUpgradingTrue(t *testing.T) {
 func TestIsUpgradingFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedResult bool
 		object         Object
+		checkOptions   []CheckOption
+		expectedOutput bool
 	}{
 		{
 			name:           "case 0: IsUpgradingFalse returns false for CR with condition Upgrading with status True",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionTrue),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 1: IsUpgradingFalse returns true for CR with condition Upgrading with status False",
-			expectedResult: true,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
+			object:         machinePoolWith(Upgrading, corev1.ConditionFalse),
+			expectedOutput: true,
 		},
 		{
 			name:           "case 2: IsUpgradingFalse returns false for CR with condition Upgrading with status Unknown",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionUnknown),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 3: IsUpgradingFalse returns false for CR without condition Upgrading",
-			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
+			object:         machinePoolWithoutConditions(),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 4: IsUpgradingFalse returns false for CR with condition Upgrading with unsupported status",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionStatus("ShinyNewStatusHere"),
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, "ShinyNewStatusHere"),
+			expectedOutput: false,
 		},
 	}
 
@@ -172,8 +91,8 @@ func TestIsUpgradingFalse(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsUpgradingFalse(tc.object)
-			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+			if result != tc.expectedOutput {
+				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
 			}
 		})
@@ -183,73 +102,33 @@ func TestIsUpgradingFalse(t *testing.T) {
 func TestIsUpgradingUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedResult bool
 		object         Object
+		expectedOutput bool
 	}{
 		{
 			name:           "case 0: IsUpgradingUnknown returns false for CR with condition Upgrading with status True",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionTrue),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 1: IsUpgradingUnknown returns false for CR with condition Upgrading with status False",
-			expectedResult: false,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
+			object:         machinePoolWith(Upgrading, corev1.ConditionFalse),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 2: IsUpgradingUnknown returns true for CR with condition Upgrading with status Unknown",
-			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, corev1.ConditionUnknown),
+			expectedOutput: true,
 		},
 		{
 			name:           "case 3: IsUpgradingUnknown returns true for CR without condition Upgrading",
-			expectedResult: true,
-			object: &capiexp.MachinePool{
-				Status: capiexp.MachinePoolStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
+			object:         machinePoolWithoutConditions(),
+			expectedOutput: true,
 		},
 		{
 			name:           "case 4: IsUpgradingUnknown returns false for CR with condition Upgrading with unsupported status",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   Upgrading,
-							Status: corev1.ConditionStatus("IDonTKnowWhatIAmDoing"),
-						},
-					},
-				},
-			},
+			object:         clusterWith(Upgrading, "IDonTKnowWhatIAmDoing"),
+			expectedOutput: false,
 		},
 	}
 
@@ -258,8 +137,8 @@ func TestIsUpgradingUnknown(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsUpgradingUnknown(tc.object)
-			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+			if result != tc.expectedOutput {
+				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
 			}
 		})
