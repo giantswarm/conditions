@@ -201,7 +201,6 @@ func TestWithReason(t *testing.T) {
 
 			// assert
 			if output != tc.expectedOutput {
-
 				if tc.input.condition != nil {
 					t.Logf(
 						"expected %t for %q (WithReason param) == %q (condition Reason field), got %t",
@@ -320,17 +319,16 @@ func TestWithSeverity(t *testing.T) {
 
 			// assert
 			if output != tc.expectedOutput {
-
 				if condition != nil {
 					t.Logf(
-						"expected %t for WithSeverity(%q) check for condition with Severity=%q), got %t",
+						"expected %t for WithSeverity(%q) when checking condition with Severity=%q), got %t",
 						tc.expectedOutput,
 						expectedSeverity,
 						condition.Severity,
 						output)
 				} else {
 					t.Logf(
-						"expected %t for WithSeverity(%q) check for nil condition, got %t",
+						"expected %t for WithSeverity(%q) when checking nil condition, got %t",
 						tc.expectedOutput,
 						expectedSeverity,
 						output)
@@ -388,16 +386,15 @@ func TestWithSeverityInfo(t *testing.T) {
 
 			// assert
 			if output != tc.expectedOutput {
-
 				if condition != nil {
 					t.Logf(
-						"expected %t for WithSeverityInfo() check for condition with Severity=%q, got %t",
+						"expected %t for WithSeverityInfo() when checking condition with Severity=%q, got %t",
 						tc.expectedOutput,
 						condition.Severity,
 						output)
 				} else {
 					t.Logf(
-						"expected %t for WithSeverityInfo() check for nil condition, got %t",
+						"expected %t for WithSeverityInfo() when checking nil condition, got %t",
 						tc.expectedOutput,
 						output)
 				}
@@ -454,16 +451,80 @@ func TestWithSeverityWarning(t *testing.T) {
 
 			// assert
 			if output != tc.expectedOutput {
-
 				if condition != nil {
 					t.Logf(
-						"expected %t for WithSeverityWarning() check for condition with Severity=%q, got %t",
+						"expected %t for WithSeverityWarning() when checking condition with Severity=%q, got %t",
 						tc.expectedOutput,
 						condition.Severity,
 						output)
 				} else {
 					t.Logf(
-						"expected %t for WithSeverityWarning() check for nil condition, got %t",
+						"expected %t for WithSeverityWarning() when checking nil condition, got %t",
+						tc.expectedOutput,
+						output)
+				}
+
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestWithSeverityError(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          *capi.Condition
+		expectedOutput bool
+	}{
+		{
+			name:           "case 0: Check for condition with severity Info returns false",
+			input:          conditionWithSeverityInfo,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 1: Check for condition with severity Warning returns false",
+			input:          conditionWithSeverityWarning,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 2: Check for condition with severity Error returns true",
+			input:          conditionWithSeverityError,
+			expectedOutput: true,
+		},
+		{
+			name:           "case 3: Check for condition with severity None returns false",
+			input:          conditionWithSeverityNone,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 4: Check for nil condition returns false",
+			input:          nil,
+			expectedOutput: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// arrange
+			condition := tc.input
+
+			// act
+			check := WithSeverityError()
+			output := check(condition)
+
+			// assert
+			if output != tc.expectedOutput {
+				if condition != nil {
+					t.Logf(
+						"expected %t for WithSeverityError() when checking condition with Severity=%q, got %t",
+						tc.expectedOutput,
+						condition.Severity,
+						output)
+				} else {
+					t.Logf(
+						"expected %t for WithSeverityError() when checking nil condition, got %t",
 						tc.expectedOutput,
 						output)
 				}
