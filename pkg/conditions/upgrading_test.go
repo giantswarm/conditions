@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
+	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
 
 func TestIsUpgradingTrue(t *testing.T) {
@@ -143,4 +144,23 @@ func TestIsUpgradingUnknown(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMarkUpgradingTrue(t *testing.T) {
+	testName := "MarkUpgradingTrue sets Upgrading condition status to True"
+	t.Run(testName, func(t *testing.T) {
+		// arrange
+		t.Log(testName)
+		cluster := &capi.Cluster{}
+
+		// act
+		MarkUpgradingTrue(cluster)
+
+		// assert
+		if !IsUpgradingTrue(cluster) {
+			got := conditionString(cluster, Upgrading)
+			t.Logf("expected that Upgrading condition status is set to True, got %s", got)
+			t.Fail()
+		}
+	})
 }
