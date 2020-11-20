@@ -11,4 +11,4 @@ type Object interface {
 	metav1.Object
 }
 
-type CheckOption func (condition *capi.Condition) bool
+type CheckOption func(condition *capi.Condition) bool

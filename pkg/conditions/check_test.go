@@ -343,34 +343,34 @@ func TestWithSeverity(t *testing.T) {
 }
 
 func TestWithSeverityInfo(t *testing.T) {
-	testCases := []struct{
-		name string
-		input *capi.Condition
+	testCases := []struct {
+		name           string
+		input          *capi.Condition
 		expectedOutput bool
-	} {
+	}{
 		{
-			name: "case 0: Check for condition with severity Info returns true",
-			input: conditionWithSeverityInfo,
+			name:           "case 0: Check for condition with severity Info returns true",
+			input:          conditionWithSeverityInfo,
 			expectedOutput: true,
 		},
 		{
-			name: "case 1: Check for condition with severity Warning returns false",
-			input: conditionWithSeverityWarning,
+			name:           "case 1: Check for condition with severity Warning returns false",
+			input:          conditionWithSeverityWarning,
 			expectedOutput: false,
 		},
 		{
-			name: "case 2: Check for condition with severity Error returns false",
-			input: conditionWithSeverityError,
+			name:           "case 2: Check for condition with severity Error returns false",
+			input:          conditionWithSeverityError,
 			expectedOutput: false,
 		},
 		{
-			name: "case 3: Check for condition with severity None returns false",
-			input: conditionWithSeverityNone,
+			name:           "case 3: Check for condition with severity None returns false",
+			input:          conditionWithSeverityNone,
 			expectedOutput: false,
 		},
 		{
-			name: "case 4: Check for nil condition returns false",
-			input: nil,
+			name:           "case 4: Check for nil condition returns false",
+			input:          nil,
 			expectedOutput: false,
 		},
 	}
@@ -409,34 +409,34 @@ func TestWithSeverityInfo(t *testing.T) {
 }
 
 func TestWithSeverityWarning(t *testing.T) {
-	testCases := []struct{
-		name string
-		input *capi.Condition
+	testCases := []struct {
+		name           string
+		input          *capi.Condition
 		expectedOutput bool
-	} {
+	}{
 		{
-			name: "case 0: Check for condition with severity Info returns false",
-			input: conditionWithSeverityInfo,
+			name:           "case 0: Check for condition with severity Info returns false",
+			input:          conditionWithSeverityInfo,
 			expectedOutput: false,
 		},
 		{
-			name: "case 1: Check for condition with severity Warning returns true",
-			input: conditionWithSeverityWarning,
+			name:           "case 1: Check for condition with severity Warning returns true",
+			input:          conditionWithSeverityWarning,
 			expectedOutput: true,
 		},
 		{
-			name: "case 2: Check for condition with severity Error returns false",
-			input: conditionWithSeverityError,
+			name:           "case 2: Check for condition with severity Error returns false",
+			input:          conditionWithSeverityError,
 			expectedOutput: false,
 		},
 		{
-			name: "case 3: Check for condition with severity None returns false",
-			input: conditionWithSeverityNone,
+			name:           "case 3: Check for condition with severity None returns false",
+			input:          conditionWithSeverityNone,
 			expectedOutput: false,
 		},
 		{
-			name: "case 4: Check for nil condition returns false",
-			input: nil,
+			name:           "case 4: Check for nil condition returns false",
+			input:          nil,
 			expectedOutput: false,
 		},
 	}
