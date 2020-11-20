@@ -185,3 +185,24 @@ func TestMarkUpgradingFalseWithUpgradeCompleted(t *testing.T) {
 		}
 	})
 }
+
+func TestMarkUpgradingFalseWithUpgradeNotStarted(t *testing.T) {
+	testName := "Upgrading condition is set with Status=False, Severity=Info, Reason=UpgradeNotStarted"
+	t.Run(testName, func(t *testing.T) {
+		// arrange
+		t.Log(testName)
+		cluster := &capi.Cluster{}
+
+		// act
+		MarkUpgradingFalseWithUpgradeNotStarted(cluster)
+
+		// assert
+		expected := IsUpgradingFalse(cluster, WithSeverityInfo(), WithUpgradeNotStartedReason())
+		if !expected {
+			t.Logf(
+				"expected that Upgrading condition is set with Status=False, Severity=Info, Reason=UpgradeNotStarted, got %s",
+				conditionString(cluster, Upgrading))
+			t.Fail()
+		}
+	})
+}
