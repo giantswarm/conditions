@@ -534,3 +534,68 @@ func TestWithSeverityError(t *testing.T) {
 		})
 	}
 }
+
+func TestWithoutSeverity(t *testing.T) {
+	testCases := []struct {
+		name           string
+		input          *capi.Condition
+		expectedOutput bool
+	}{
+		{
+			name:           "case 0: Check for condition with severity Info returns false",
+			input:          conditionWithSeverityInfo,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 1: Check for condition with severity Warning returns false",
+			input:          conditionWithSeverityWarning,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 2: Check for condition with severity Error returns false",
+			input:          conditionWithSeverityError,
+			expectedOutput: false,
+		},
+		{
+			name:           "case 3: Check for condition with severity None returns true",
+			input:          conditionWithSeverityNone,
+			expectedOutput: true,
+		},
+		{
+			name:           "case 4: Check for nil condition returns false",
+			input:          nil,
+			expectedOutput: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// arrange
+			condition := tc.input
+
+			// act
+			check := WithoutSeverity()
+			output := check(condition)
+
+			// assert
+			if output != tc.expectedOutput {
+				if condition != nil {
+					t.Logf(
+						"expected %t for WithoutSeverity() when checking condition with Severity=%q, got %t",
+						tc.expectedOutput,
+						condition.Severity,
+						output)
+				} else {
+					t.Logf(
+						"expected %t for WithoutSeverity() when checking nil condition, got %t",
+						tc.expectedOutput,
+						output)
+				}
+
+				t.Fail()
+			}
+		})
+	}
+}
