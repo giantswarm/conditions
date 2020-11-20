@@ -85,13 +85,85 @@ func TestIsUpgradingFalse(t *testing.T) {
 			object:         clusterWith(Upgrading, "ShinyNewStatusHere"),
 			expectedOutput: false,
 		},
+		{
+			name: "case 5: CR with condition Upgrading(Status=False, Reason=\"UpgradeCompleted\") for check option WithUpgradeCompletedReason()",
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   Upgrading,
+							Status: corev1.ConditionFalse,
+							Reason: UpgradeCompletedReason,
+						},
+					},
+				},
+			},
+			checkOptions: []CheckOption{
+				WithUpgradeCompletedReason(),
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "case 6: CR with condition Upgrading(Status=False, Reason=\"ForReasons\") for check option WithUpgradeNotStartedReason()",
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   Upgrading,
+							Status: corev1.ConditionFalse,
+							Reason: UpgradeNotStartedReason,
+						},
+					},
+				},
+			},
+			checkOptions: []CheckOption{
+				WithUpgradeNotStartedReason(),
+			},
+			expectedOutput: true,
+		},
+		{
+			name: "case 7: CR with condition Upgrading(Status=False, Reason=\"Whatever\") fails for check option WithUpgradeCompletedReason()",
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   Upgrading,
+							Status: corev1.ConditionFalse,
+							Reason: "Whatever",
+						},
+					},
+				},
+			},
+			checkOptions: []CheckOption{
+				WithUpgradeCompletedReason(),
+			},
+			expectedOutput: false,
+		},
+		{
+			name: "case 8: CR with condition Upgrading(Status=False, Reason=\"ForReasons\") fails for check option WithUpgradeNotStartedReason()",
+			object: &capi.Cluster{
+				Status: capi.ClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   Upgrading,
+							Status: corev1.ConditionFalse,
+							Reason: "ForReasons",
+						},
+					},
+				},
+			},
+			checkOptions: []CheckOption{
+				WithUpgradeNotStartedReason(),
+			},
+			expectedOutput: false,
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Log(tc.name)
 
-			result := IsUpgradingFalse(tc.object)
+			result := IsUpgradingFalse(tc.object, tc.checkOptions...)
 			if result != tc.expectedOutput {
 				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
