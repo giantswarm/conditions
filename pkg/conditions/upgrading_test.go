@@ -8,7 +8,7 @@ import (
 	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha3"
 )
 
-func Test_IsUpgradingTrue(t *testing.T) {
+func TestIsUpgradingTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
@@ -94,7 +94,7 @@ func Test_IsUpgradingTrue(t *testing.T) {
 	}
 }
 
-func Test_IsUpgradingFalse(t *testing.T) {
+func TestIsUpgradingFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
@@ -180,7 +180,7 @@ func Test_IsUpgradingFalse(t *testing.T) {
 	}
 }
 
-func Test_IsUpgradingUnknown(t *testing.T) {
+func TestIsUpgradingUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedResult bool
