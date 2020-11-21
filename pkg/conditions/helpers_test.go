@@ -30,6 +30,19 @@ func clusterWithoutConditions() *capi.Cluster {
 	}
 }
 
+func machineWith(conditionType capi.ConditionType, conditionStatus corev1.ConditionStatus) *capi.Machine {
+	return &capi.Machine{
+		Status: capi.MachineStatus{
+			Conditions: capi.Conditions{
+				{
+					Type:   conditionType,
+					Status: conditionStatus,
+				},
+			},
+		},
+	}
+}
+
 func machinePoolWith(conditionType capi.ConditionType, conditionStatus corev1.ConditionStatus) *capiexp.MachinePool {
 	return &capiexp.MachinePool{
 		Status: capiexp.MachinePoolStatus{
