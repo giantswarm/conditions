@@ -10,73 +10,33 @@ import (
 func Test_IsControlPlaneReadyTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
-		expectedResult bool
+		expectedOutput bool
 		object         *capi.Cluster
 	}{
 		{
 			name:           "case 0: IsControlPlaneReadyTrue returns true for Cluster with condition ControlPlaneReady with status True",
-			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionTrue),
+			expectedOutput: true,
 		},
 		{
 			name:           "case 1: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with status False",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionFalse),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 2: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with status Unknown",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionUnknown),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 3: IsControlPlaneReadyTrue returns false for Cluster without condition ControlPlaneReady",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
+			object:         clusterWithoutConditions(),
+			expectedOutput: false,
 		},
 		{
 			name:           "case 4: IsControlPlaneReadyTrue returns false for Cluster with condition ControlPlaneReady with unsupported status",
-			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionStatus("AnotherUnsupportedValue"),
-						},
-					},
-				},
-			},
+			object:         clusterWith(ControlPlaneReady, "AnotherUnsupportedValue"),
+			expectedOutput: false,
 		},
 	}
 
@@ -85,8 +45,8 @@ func Test_IsControlPlaneReadyTrue(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsControlPlaneReadyTrue(tc.object)
-			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+			if result != tc.expectedOutput {
+				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
 			}
 		})
@@ -101,68 +61,28 @@ func Test_IsControlPlaneReadyFalse(t *testing.T) {
 	}{
 		{
 			name:           "case 0: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with status True",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionTrue),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 1: IsControlPlaneReadyFalse returns true for Cluster with condition ControlPlaneReady with status False",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionFalse),
 			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 2: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with status Unknown",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionUnknown),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 3: IsControlPlaneReadyFalse returns false for Cluster without condition ControlPlaneReady",
+			object:         clusterWithoutConditions(),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
 		},
 		{
 			name:           "case 4: IsControlPlaneReadyFalse returns false for Cluster with condition ControlPlaneReady with unsupported status",
+			object:         clusterWith(ControlPlaneReady, ""),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionStatus(""),
-						},
-					},
-				},
-			},
 		},
 	}
 
@@ -187,68 +107,28 @@ func Test_IsControlPlaneReadyUnknown(t *testing.T) {
 	}{
 		{
 			name:           "case 0: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with status True",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionTrue),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionTrue,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 1: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with status False",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionFalse),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionFalse,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 2: IsControlPlaneReadyUnknown returns true for Cluster with condition ControlPlaneReady with status Unknown",
+			object:         clusterWith(ControlPlaneReady, corev1.ConditionUnknown),
 			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionUnknown,
-						},
-					},
-				},
-			},
 		},
 		{
 			name:           "case 3: IsControlPlaneReadyUnknown returns true for Cluster without condition ControlPlaneReady",
+			object:         clusterWithoutConditions(),
 			expectedResult: true,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{},
-				},
-			},
 		},
 		{
 			name:           "case 4: IsControlPlaneReadyUnknown returns false for Cluster with condition ControlPlaneReady with unsupported status",
+			object:         clusterWith(ControlPlaneReady, "YouShallNotPass"),
 			expectedResult: false,
-			object: &capi.Cluster{
-				Status: capi.ClusterStatus{
-					Conditions: capi.Conditions{
-						{
-							Type:   ControlPlaneReady,
-							Status: corev1.ConditionStatus("YouShallNotPass"),
-						},
-					},
-				},
-			},
 		},
 	}
 
