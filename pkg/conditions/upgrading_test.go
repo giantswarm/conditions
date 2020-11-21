@@ -91,9 +91,9 @@ func TestIsUpgradingFalse(t *testing.T) {
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   Upgrading,
-							Status: corev1.ConditionFalse,
-							Reason: UpgradeCompletedReason,
+							Type:     Upgrading,
+							Status:   corev1.ConditionFalse,
+							Reason:   UpgradeCompletedReason,
 							Severity: capi.ConditionSeverityInfo,
 						},
 					},
@@ -108,9 +108,9 @@ func TestIsUpgradingFalse(t *testing.T) {
 				Status: capi.ClusterStatus{
 					Conditions: capi.Conditions{
 						{
-							Type:   Upgrading,
-							Status: corev1.ConditionFalse,
-							Reason: UpgradeNotStartedReason,
+							Type:     Upgrading,
+							Status:   corev1.ConditionFalse,
+							Reason:   UpgradeNotStartedReason,
 							Severity: capi.ConditionSeverityInfo,
 						},
 					},
