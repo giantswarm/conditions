@@ -197,32 +197,32 @@ func TestIsCreatingUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		object         Object
-		expectedResult bool
+		expectedOutput bool
 	}{
 		{
 			name:           "case 0: IsCreatingUnknown returns false for CR with condition Creating with status True",
 			object:         clusterWith(Creating, corev1.ConditionTrue),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 		{
 			name:           "case 1: IsCreatingUnknown returns false for CR with condition Creating with status False",
 			object:         clusterWith(Creating, corev1.ConditionFalse),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 		{
 			name:           "case 2: IsCreatingUnknown returns true for CR with condition Creating with status Unknown",
 			object:         clusterWith(Creating, corev1.ConditionUnknown),
-			expectedResult: true,
+			expectedOutput: true,
 		},
 		{
 			name:           "case 3: IsCreatingUnknown returns true for CR without condition Creating",
 			object:         machinePoolWithoutConditions(),
-			expectedResult: true,
+			expectedOutput: true,
 		},
 		{
 			name:           "case 4: IsCreatingUnknown returns false for CR with condition Creating with unsupported status",
 			object:         clusterWith(Creating, "BrandNewStatusHere"),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 	}
 
@@ -231,10 +231,10 @@ func TestIsCreatingUnknown(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsCreatingUnknown(tc.object)
-			if result != tc.expectedResult {
+			if result != tc.expectedOutput {
 				t.Logf(
 					"expected IsCreatingUnknown to return %t, got %t for %s",
-					tc.expectedResult,
+					tc.expectedOutput,
 					result,
 					conditionString(tc.object, Creating))
 				t.Fail()

@@ -57,32 +57,32 @@ func Test_IsReadyFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
 		object         Object
-		expectedResult bool
+		expectedOutput bool
 	}{
 		{
 			name:           "case 0: IsReadyFalse returns false for CR with condition Ready with status True",
 			object:         clusterWith(capi.ReadyCondition, corev1.ConditionTrue),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 		{
 			name:           "case 1: IsReadyFalse returns true for CR with condition Ready with status False",
 			object:         machinePoolWith(capi.ReadyCondition, corev1.ConditionFalse),
-			expectedResult: true,
+			expectedOutput: true,
 		},
 		{
 			name:           "case 2: IsReadyFalse returns false for CR with condition Ready with status Unknown",
 			object:         clusterWith(capi.ReadyCondition, corev1.ConditionUnknown),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 		{
 			name:           "case 3: IsReadyFalse returns false for CR without condition Ready",
 			object:         machinePoolWithoutConditions(),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 		{
 			name:           "case 4: IsReadyFalse returns false for CR with condition Ready with unsupported status",
 			object:         machineWith(capi.ReadyCondition, "ShinyNewStatusHere"),
-			expectedResult: false,
+			expectedOutput: false,
 		},
 	}
 
@@ -91,8 +91,8 @@ func Test_IsReadyFalse(t *testing.T) {
 			t.Log(tc.name)
 
 			result := IsReadyFalse(tc.object)
-			if result != tc.expectedResult {
-				t.Logf("expected %t, got %t", tc.expectedResult, result)
+			if result != tc.expectedOutput {
+				t.Logf("expected %t, got %t", tc.expectedOutput, result)
 				t.Fail()
 			}
 		})
