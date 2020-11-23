@@ -225,20 +225,20 @@ func TestIsControlPlaneReadyUnknown(t *testing.T) {
 	}
 }
 
-type reconcileTestCase struct {
-	name                      string
-	cluster                   *capi.Cluster
-	controlPlaneObject        Object
-	expectedControlPlaneReady capi.Condition
+type updateTestCase struct {
+	name               string
+	cluster            *capi.Cluster
+	controlPlaneObject Object
+	expectedCondition  capi.Condition
 }
 
 func TestUpdateControlPlaneReady(t *testing.T) {
-	testCases := []reconcileTestCase{
+	testCases := []updateTestCase{
 		{
 			name:               "case 0: For nil control plane object, it sets ControlPlaneReady status to False, Severity=Warning, Reason=ControlPlaneObjectNotFound",
 			cluster:            &capi.Cluster{},
 			controlPlaneObject: nil,
-			expectedControlPlaneReady: capi.Condition{
+			expectedCondition: capi.Condition{
 				Type:     ControlPlaneReady,
 				Status:   corev1.ConditionFalse,
 				Severity: capi.ConditionSeverityWarning,
@@ -253,7 +253,7 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 				},
 			},
 			controlPlaneObject: machineWithoutConditions(),
-			expectedControlPlaneReady: capi.Condition{
+			expectedCondition: capi.Condition{
 				Type:     ControlPlaneReady,
 				Status:   corev1.ConditionFalse,
 				Severity: capi.ConditionSeverityInfo,
@@ -268,7 +268,7 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 				},
 			},
 			controlPlaneObject: machineWithoutConditions(),
-			expectedControlPlaneReady: capi.Condition{
+			expectedCondition: capi.Condition{
 				Type:     ControlPlaneReady,
 				Status:   corev1.ConditionFalse,
 				Severity: capi.ConditionSeverityWarning,
@@ -288,7 +288,7 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 					},
 				},
 			},
-			expectedControlPlaneReady: capi.Condition{
+			expectedCondition: capi.Condition{
 				Type:   ControlPlaneReady,
 				Status: corev1.ConditionFalse,
 			},
@@ -306,7 +306,7 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 					},
 				},
 			},
-			expectedControlPlaneReady: capi.Condition{
+			expectedCondition: capi.Condition{
 				Type:   ControlPlaneReady,
 				Status: corev1.ConditionTrue,
 			},
@@ -323,11 +323,11 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 			// assert
 			controlPlaneReady, ok := GetControlPlaneReady(tc.cluster)
 			if ok {
-				if !AreEqual(&controlPlaneReady, &tc.expectedControlPlaneReady) {
+				if !AreEqual(&controlPlaneReady, &tc.expectedCondition) {
 					t.Logf(
 						"ControlPlaneReady was not set correctly, got %s, expected %s",
 						sprintCondition(&controlPlaneReady),
-						sprintCondition(&tc.expectedControlPlaneReady))
+						sprintCondition(&tc.expectedCondition))
 					t.Fail()
 				}
 			} else {

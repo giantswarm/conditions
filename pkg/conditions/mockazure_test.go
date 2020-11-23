@@ -2,10 +2,12 @@ package conditions
 
 import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
 
-// AzureCluster is the Schema for the azureclusters API
+// MockAzureCluster is the Schema for the mockazureclusters API
 type MockAzureCluster struct {
 	metav1.TypeMeta   `json:",inline"`
 	metav1.ObjectMeta `json:"metadata,omitempty"`
@@ -14,10 +16,10 @@ type MockAzureCluster struct {
 	Status MockAzureClusterStatus `json:"status,omitempty"`
 }
 
-// AzureClusterSpec defines the desired state of AzureCluster
+// MockAzureClusterSpec defines the desired state of MockAzureCluster
 type MockAzureClusterSpec struct{}
 
-// AzureClusterStatus defines the observed state of AzureCluster
+// MockAzureClusterStatus defines the observed state of MockAzureCluster
 type MockAzureClusterStatus struct {
 	Conditions capi.Conditions `json:"conditions,omitempty"`
 }
@@ -30,4 +32,14 @@ func (c *MockAzureCluster) GetConditions() capi.Conditions {
 // SetConditions will set the given conditions on an MockAzureCluster object
 func (c *MockAzureCluster) SetConditions(conditions capi.Conditions) {
 	c.Status.Conditions = conditions
+}
+
+func (c *MockAzureCluster) GetObjectKind() schema.ObjectKind { return c }
+
+func (c *MockAzureCluster) GroupVersionKind() schema.GroupVersionKind {
+	return schema.FromAPIVersionAndKind(c.TypeMeta.APIVersion, c.TypeMeta.Kind)
+}
+
+func (c *MockAzureCluster) DeepCopyObject() runtime.Object {
+	panic("MockAzureCluster does not support DeepCopy")
 }

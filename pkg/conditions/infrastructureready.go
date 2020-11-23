@@ -29,7 +29,7 @@ const (
 	//    // Ready condition from AzureMachinePool CR.
 	//    capiconditions.SetMirror(machinePool, conditions.InfrastructureReady, azureMachinePool)
 	//
-	InfrastructureReady capi.ConditionType = capi.InfrastructureReadyCondition
+	InfrastructureReady = capi.InfrastructureReadyCondition
 
 	// Below are condition reasons for InfrastructureReady that are
 	// usually set when condition status is set to False.
@@ -79,7 +79,7 @@ func IsInfrastructureReadyUnknown(object Object) bool {
 	return capiconditions.IsUnknown(object, InfrastructureReady)
 }
 
-// ReconcileInfrastructureReady sets InfrastructureReady condition on specified
+// UpdateInfrastructureReady sets InfrastructureReady condition on specified
 // object by mirroring Ready condition from specified infrastructure object.
 //
 // If specified infrastructure object is nil, object InfrastructureReady will
@@ -88,7 +88,7 @@ func IsInfrastructureReadyUnknown(object Object) bool {
 // If specified infrastructure object's Ready condition is not set, object
 // InfrastructureReady will be set with condition False and reason
 // WaitingForInfrastructure.
-func ReconcileInfrastructureReady(object Object, infrastructureObject Object) {
+func UpdateInfrastructureReady(object Object, infrastructureObject Object) {
 	if infrastructureObject == nil {
 		warningMessage :=
 			"Corresponding provider-specific infrastructure object of " +
@@ -101,6 +101,8 @@ func ReconcileInfrastructureReady(object Object, infrastructureObject Object) {
 			capi.ConditionSeverityWarning,
 			warningMessage,
 			infrastructureObject, object, object.GetNamespace(), object.GetName())
+
+		return
 	}
 
 	objectAge := time.Since(object.GetCreationTimestamp().Time)

@@ -224,3 +224,122 @@ func Test_IsInfrastructureReadyUnknown(t *testing.T) {
 		})
 	}
 }
+
+func TestUpdateInfrastructureReady(t *testing.T) {
+	testCases := []struct {
+		name                 string
+		cluster              *capi.Cluster
+		infrastructureObject Object
+		expectedCondition    capi.Condition
+	}{
+		{
+			name:                 "case 0: For nil infrastructure object, it sets InfrastructureReady(Status=False, Severity=Warning, Reason=InfrastructureObjectNotFound)",
+			cluster:              &capi.Cluster{},
+			infrastructureObject: nil,
+			expectedCondition: capi.Condition{
+				Type:     InfrastructureReady,
+				Status:   corev1.ConditionFalse,
+				Severity: capi.ConditionSeverityWarning,
+				Reason:   InfrastructureObjectNotFoundReason,
+			},
+		},
+		{
+			name: "case 1: For 5min old Cluster and infrastructure object w/o Ready, it sets InfrastructureReady(Status=False, Severity=Info, Reason=WaitingForInfrastructureFallback)",
+			cluster: &capi.Cluster{
+				ObjectMeta: metav1.ObjectMeta{
+					CreationTimestamp: metav1.NewTime(time.Now().Add(-WaitingForInfrastructureWarningThresholdTime / 2)),
+				},
+			},
+			infrastructureObject: &MockAzureCluster{
+				Status: MockAzureClusterStatus{
+					Conditions: capi.Conditions{},
+				},
+			},
+			expectedCondition: capi.Condition{
+				Type:     InfrastructureReady,
+				Status:   corev1.ConditionFalse,
+				Severity: capi.ConditionSeverityInfo,
+				Reason:   capi.WaitingForInfrastructureFallbackReason,
+			},
+		},
+		{
+			name: "case 2: For 20min old Cluster and infrastructure object w/o Ready, it sets InfrastructureReady status to False, Severity=Warning, Reason=WaitingForControlPlaneFallback",
+			cluster: &capi.Cluster{
+				ObjectMeta: metav1.ObjectMeta{
+					CreationTimestamp: metav1.NewTime(time.Now().Add(-2 * WaitingForInfrastructureWarningThresholdTime)),
+				},
+			},
+			infrastructureObject: &MockAzureCluster{
+				Status: MockAzureClusterStatus{
+					Conditions: capi.Conditions{},
+				},
+			},
+			expectedCondition: capi.Condition{
+				Type:     InfrastructureReady,
+				Status:   corev1.ConditionFalse,
+				Severity: capi.ConditionSeverityWarning,
+				Reason:   capi.WaitingForInfrastructureFallbackReason,
+			},
+		},
+		{
+			name:    "case 3: For infrastructure object w/ Ready(Status=False), it sets InfrastructureReady(Status=False)",
+			cluster: &capi.Cluster{},
+			infrastructureObject: &MockAzureCluster{
+				Status: MockAzureClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   capi.ReadyCondition,
+							Status: corev1.ConditionFalse,
+						},
+					},
+				},
+			},
+			expectedCondition: capi.Condition{
+				Type:   InfrastructureReady,
+				Status: corev1.ConditionFalse,
+			},
+		},
+		{
+			name:    "case 4: For infrastructure object w/ Ready(Status=True), it sets InfrastructureReady(Status=True)",
+			cluster: &capi.Cluster{},
+			infrastructureObject: &MockAzureCluster{
+				Status: MockAzureClusterStatus{
+					Conditions: capi.Conditions{
+						{
+							Type:   capi.ReadyCondition,
+							Status: corev1.ConditionTrue,
+						},
+					},
+				},
+			},
+			expectedCondition: capi.Condition{
+				Type:   InfrastructureReady,
+				Status: corev1.ConditionTrue,
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Log(tc.name)
+
+			// act
+			UpdateInfrastructureReady(tc.cluster, tc.infrastructureObject)
+
+			// assert
+			infrastructureReady, ok := GetInfrastructureReady(tc.cluster)
+			if ok {
+				if !AreEqual(&infrastructureReady, &tc.expectedCondition) {
+					t.Logf(
+						"InfrastructureReady was not set correctly, got %s, expected %s",
+						sprintCondition(&infrastructureReady),
+						sprintCondition(&tc.expectedCondition))
+					t.Fail()
+				}
+			} else {
+				t.Log("InfrastructureReady was not set")
+				t.Fail()
+			}
+		})
+	}
+}
