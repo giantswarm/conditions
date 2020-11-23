@@ -67,9 +67,22 @@ func IsInfrastructureReadyTrue(object Object) bool {
 
 // IsInfrastructureReadyFalse checks if specified object is not in
 // InfrastructureReady condition (if InfrastructureReady condition is set with
-// status False).
-func IsInfrastructureReadyFalse(object Object) bool {
-	return capiconditions.IsFalse(object, InfrastructureReady)
+// status False) and if optionally specified checks are successful.
+func IsInfrastructureReadyFalse(object Object, checkOptions ...CheckOption) bool {
+	condition := capiconditions.Get(object, InfrastructureReady)
+	if !IsFalse(condition) {
+		// Condition is not set or it does not have status False
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(condition) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsInfrastructureReadyUnknown checks if it is unknown whether the specified
