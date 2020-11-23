@@ -106,7 +106,7 @@ func sprintCondition(condition *capi.Condition) string {
 	var text string
 	if condition != nil {
 		text = fmt.Sprintf(
-			"%s(Status=%q, Reason=%q, Severity=%q, [not checked: Message=%q])",
+			"%s(Status=%q, Reason=%q, Severity=%q, [optional: Message=%q])",
 			condition.Type,
 			condition.Status,
 			condition.Reason,

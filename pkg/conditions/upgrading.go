@@ -27,6 +27,19 @@ const (
 	UpgradeNotStartedReason = "UpgradeNotStarted"
 )
 
+// GetUpgrading tries to get Upgrading condition from the specified object. If
+// the Upgrading condition was found, it returns a copy of the condition and
+// true, otherwise it returns an empty struct and false.
+func GetUpgrading(object Object) (capi.Condition, bool) {
+	c := capiconditions.Get(object, Upgrading)
+
+	if c != nil {
+		return *c, true
+	} else {
+		return capi.Condition{}, false
+	}
+}
+
 // IsUpgradingTrue checks if specified object is in Upgrading condition (if
 // Upgrading condition is set with status True).
 func IsUpgradingTrue(object Object) bool {
