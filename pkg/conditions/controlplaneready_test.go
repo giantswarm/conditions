@@ -9,6 +9,84 @@ import (
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
 
+func TestGetControlPlaneReady(t *testing.T) {
+	testTime := time.Now()
+
+	testCases := []struct {
+		name              string
+		expectedCondition *capi.Condition
+	}{
+		{
+			name: "case 0: ControlPlaneReady with Status=True is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               ControlPlaneReady,
+				Status:             corev1.ConditionTrue,
+				LastTransitionTime: metav1.NewTime(testTime),
+			},
+		},
+		{
+			name: "case 1: ControlPlaneReady with Status=False is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               ControlPlaneReady,
+				Status:             corev1.ConditionFalse,
+				LastTransitionTime: metav1.NewTime(testTime),
+				Severity:           capi.ConditionSeverityWarning,
+				Reason:             "FooBar",
+				Message:            "Stuff happened",
+			},
+		},
+		{
+			name:              "case 2: Condition is neither set nor returned",
+			expectedCondition: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// arrange
+			t.Log(tc.name)
+			var cluster *capi.Cluster
+			if tc.expectedCondition != nil {
+				cluster = &capi.Cluster{
+					Status: capi.ClusterStatus{
+						Conditions: capi.Conditions{*tc.expectedCondition},
+					},
+				}
+			} else {
+				cluster = &capi.Cluster{}
+			}
+
+			// act
+			controlPlaneReady, conditionWasSet := GetControlPlaneReady(cluster)
+
+			// assert
+			if tc.expectedCondition != nil && conditionWasSet {
+				areEqual := controlPlaneReady.Type == tc.expectedCondition.Type &&
+					controlPlaneReady.Status == tc.expectedCondition.Status &&
+					controlPlaneReady.Severity == tc.expectedCondition.Severity &&
+					controlPlaneReady.Reason == tc.expectedCondition.Reason &&
+					controlPlaneReady.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+
+				if !areEqual {
+					t.Logf(
+						"ControlPlaneReady was not set correctly, got %s, expected %s",
+						sprintCondition(&controlPlaneReady),
+						sprintCondition(tc.expectedCondition))
+					t.Fail()
+				}
+			} else if tc.expectedCondition == nil && !conditionWasSet {
+				// all good
+			} else if tc.expectedCondition != nil && !conditionWasSet {
+				t.Logf("ControlPlaneReady was not set, expected %s", sprintCondition(tc.expectedCondition))
+				t.Fail()
+			} else if tc.expectedCondition == nil && conditionWasSet {
+				t.Logf("ControlPlaneReady was not set to %s, expected nil", sprintCondition(&controlPlaneReady))
+				t.Fail()
+			}
+		})
+	}
+}
+
 func TestIsControlPlaneReadyTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
