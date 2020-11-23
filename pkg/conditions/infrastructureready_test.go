@@ -263,7 +263,7 @@ func TestUpdateInfrastructureReady(t *testing.T) {
 			},
 		},
 		{
-			name: "case 2: For 20min old Cluster and infrastructure object w/o Ready, it sets InfrastructureReady status to False, Severity=Warning, Reason=WaitingForControlPlaneFallback",
+			name: "case 2: For 20min old Cluster and infrastructure object w/o Ready, it sets InfrastructureReady status to False, Severity=Warning, Reason=WaitingForInfrastructureFallback",
 			cluster: &capi.Cluster{
 				ObjectMeta: metav1.ObjectMeta{
 					CreationTimestamp: metav1.NewTime(time.Now().Add(-2 * WaitingForInfrastructureWarningThresholdTime)),
