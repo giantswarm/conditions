@@ -2,10 +2,90 @@ package conditions
 
 import (
 	"testing"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
+
+func TestGetCreating(t *testing.T) {
+	testTime := time.Now()
+
+	testCases := []struct {
+		name              string
+		expectedCondition *capi.Condition
+	}{
+		{
+			name: "case 0: Creating with Status=True is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               Creating,
+				Status:             corev1.ConditionTrue,
+				LastTransitionTime: metav1.NewTime(testTime),
+			},
+		},
+		{
+			name: "case 1: Creating with Status=False is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               Creating,
+				Status:             corev1.ConditionFalse,
+				LastTransitionTime: metav1.NewTime(testTime),
+				Severity:           capi.ConditionSeverityInfo,
+				Reason:             CreationCompletedReason,
+				Message:            "All good!",
+			},
+		},
+		{
+			name:              "case 2: Condition is neither set nor returned",
+			expectedCondition: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// arrange
+			t.Log(tc.name)
+			var cluster *capi.Cluster
+			if tc.expectedCondition != nil {
+				cluster = &capi.Cluster{
+					Status: capi.ClusterStatus{
+						Conditions: capi.Conditions{*tc.expectedCondition},
+					},
+				}
+			} else {
+				cluster = &capi.Cluster{}
+			}
+
+			// act
+			condition, conditionWasSet := GetCreating(cluster)
+
+			// assert
+			if tc.expectedCondition != nil && conditionWasSet {
+				areEqual := condition.Type == tc.expectedCondition.Type &&
+					condition.Status == tc.expectedCondition.Status &&
+					condition.Severity == tc.expectedCondition.Severity &&
+					condition.Reason == tc.expectedCondition.Reason &&
+					condition.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+
+				if !areEqual {
+					t.Logf(
+						"Creating was not set correctly, got %s, expected %s",
+						sprintCondition(&condition),
+						sprintCondition(tc.expectedCondition))
+					t.Fail()
+				}
+			} else if tc.expectedCondition == nil && !conditionWasSet {
+				// all good
+			} else if tc.expectedCondition != nil && !conditionWasSet {
+				t.Logf("Creating was not set, expected %s", sprintCondition(tc.expectedCondition))
+				t.Fail()
+			} else if tc.expectedCondition == nil && conditionWasSet {
+				t.Logf("Creating was not set to %s, expected nil", sprintCondition(&condition))
+				t.Fail()
+			}
+		})
+	}
+}
 
 func TestIsCreatingTrue(t *testing.T) {
 	testCases := []struct {

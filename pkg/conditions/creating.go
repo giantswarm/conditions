@@ -26,6 +26,19 @@ const (
 	ExistingObjectReason = "ExistingObject"
 )
 
+// GetCreating tries to get Creating condition from the specified object. If
+// the Creating condition was found, it returns a copy of the condition and
+// true, otherwise it returns an empty struct and false.
+func GetCreating(object Object) (capi.Condition, bool) {
+	c := capiconditions.Get(object, Creating)
+
+	if c != nil {
+		return *c, true
+	} else {
+		return capi.Condition{}, false
+	}
+}
+
 // IsCreatingTrue checks if specified object is in Creating condition (if
 // Creating condition is set with status True).
 func IsCreatingTrue(object Object) bool {
