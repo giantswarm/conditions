@@ -13,8 +13,21 @@ func IsReadyTrue(object Object) bool {
 
 // IsReadyFalse checks if specified object is not in Ready condition (if Ready
 // condition is set with status False).
-func IsReadyFalse(object Object) bool {
-	return capiconditions.IsFalse(object, capi.ReadyCondition)
+func IsReadyFalse(object Object, checkOptions ...CheckOption) bool {
+	condition := capiconditions.Get(object, capi.ReadyCondition)
+	if !IsFalse(condition) {
+		// Condition is not set or it does not have status False
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(condition) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsReadyUnknown checks if it is unknown whether the specified object is in
