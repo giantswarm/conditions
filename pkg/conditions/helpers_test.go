@@ -43,6 +43,14 @@ func machineWith(conditionType capi.ConditionType, conditionStatus corev1.Condit
 	}
 }
 
+func machineWithoutConditions() *capi.Machine {
+	return &capi.Machine{
+		Status: capi.MachineStatus{
+			Conditions: capi.Conditions{},
+		},
+	}
+}
+
 func machinePoolWith(conditionType capi.ConditionType, conditionStatus corev1.ConditionStatus) *capiexp.MachinePool {
 	return &capiexp.MachinePool{
 		Status: capiexp.MachinePoolStatus{
@@ -89,6 +97,23 @@ func conditionString(object Object, conditionType capi.ConditionType) string {
 			condition.Message)
 	} else {
 		text = "condition not set"
+	}
+
+	return text
+}
+
+func sprintCondition(condition *capi.Condition) string {
+	var text string
+	if condition != nil {
+		text = fmt.Sprintf(
+			"%s(Status=%q, Reason=%q, Severity=%q, [not checked: Message=%q])",
+			condition.Type,
+			condition.Status,
+			condition.Reason,
+			condition.Severity,
+			condition.Message)
+	} else {
+		text = "condition is nil"
 	}
 
 	return text

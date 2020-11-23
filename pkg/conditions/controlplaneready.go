@@ -22,7 +22,7 @@ const (
 	//
 	//    import capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 	//
-	//    // Set ControlPlaneReady for Cluster CR by mirroring Ready conditio
+	//    // Set ControlPlaneReady for Cluster CR by mirroring Ready condition
 	//    // from AzureMachine CR.
 	//    capiconditions.SetMirror(cluster, conditions.ControlPlaneReady, azureMachine)
 	//
@@ -30,7 +30,7 @@ const (
 	//    // Ready condition from AzureMachinePool CR.
 	//    capiconditions.SetMirror(machinePool, conditions.ControlPlaneReady, azureMachinePool)
 	//
-	ControlPlaneReady capi.ConditionType = capi.ControlPlaneReadyCondition
+	ControlPlaneReady = capi.ControlPlaneReadyCondition
 
 	// Below are condition reasons for ControlPlaneReady that are usually set
 	// when condition status is set to False.
@@ -45,6 +45,20 @@ const (
 	// severity Info. After this threshold time, severity Warning is used.
 	WaitingForControlPlaneWarningThresholdTime = 10 * time.Minute
 )
+
+// GetControlPlaneReady tries to get ControlPlaneReady condition from the
+// specified Cluster CR. If the ControlPlaneReady condition was found and
+// returned, the returned bool value will be set to true, otherwise it will be
+// set to false.
+func GetControlPlaneReady(cluster *capi.Cluster) (capi.Condition, bool) {
+	controlPlaneReady := capiconditions.Get(cluster, ControlPlaneReady)
+
+	if controlPlaneReady != nil {
+		return *controlPlaneReady, true
+	} else {
+		return capi.Condition{}, false
+	}
+}
 
 // IsControlPlaneReadyTrue checks if specified cluster is in ControlPlaneReady
 // condition (if ControlPlaneReady condition is set with status True).
@@ -66,7 +80,7 @@ func IsControlPlaneReadyUnknown(cluster *capi.Cluster) bool {
 	return capiconditions.IsUnknown(cluster, ControlPlaneReady)
 }
 
-// ReconcileControlPlaneReady sets ControlPlaneReady condition on specified
+// UpdateControlPlaneReady sets ControlPlaneReady condition on specified
 // cluster by mirroring Ready condition from specified control plane object.
 //
 // If specified control plane object is nil, object ControlPlaneReady will
@@ -75,7 +89,7 @@ func IsControlPlaneReadyUnknown(cluster *capi.Cluster) bool {
 // If specified control plane object's Ready condition is not set, object
 // ControlPlaneReady will be set with condition False and reason
 // WaitingForControlPlane.
-func ReconcileControlPlaneReady(cluster *capi.Cluster, controlPlaneObject *capi.Cluster) {
+func UpdateControlPlaneReady(cluster *capi.Cluster, controlPlaneObject Object) {
 	if controlPlaneObject == nil {
 		warningMessage :=
 			"Control plane object of type %T is not found for specified %T object %s/%s"
@@ -87,6 +101,8 @@ func ReconcileControlPlaneReady(cluster *capi.Cluster, controlPlaneObject *capi.
 			capi.ConditionSeverityWarning,
 			warningMessage,
 			controlPlaneObject, cluster, cluster.GetNamespace(), cluster.GetName())
+
+		return
 	}
 
 	clusterAge := time.Since(cluster.GetCreationTimestamp().Time)

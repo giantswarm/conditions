@@ -60,3 +60,28 @@ func WithSeverityError() CheckOption {
 func WithoutSeverity() CheckOption {
 	return WithSeverity(capi.ConditionSeverityNone)
 }
+
+// AreEqual compares specified conditions.
+//
+// If both are nil, it returns true. If only one of them is nil, it returns
+// false. If both are different than nil, it compares Type, Status, Severity
+// and Reason fields, while it ignores LastTransitionTime and Message.
+func AreEqual(c1, c2 *capi.Condition) bool {
+	// Both are nil
+	if c1 == nil && c2 == nil {
+		return true
+	}
+
+	// Only one is nil
+	if c1 == nil || c2 == nil {
+		return false
+	}
+
+	// None is nil, compare fields
+	equal := c1.Type == c2.Type &&
+		c1.Status == c2.Status &&
+		c1.Severity == c2.Severity &&
+		c1.Reason == c2.Reason
+
+	return equal
+}
