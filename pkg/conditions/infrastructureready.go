@@ -45,6 +45,20 @@ const (
 	WaitingForInfrastructureWarningThresholdTime = 10 * time.Minute
 )
 
+// GetInfrastructureReady tries to get InfrastructureReady condition from the
+// specified Cluster CR. If the InfrastructureReady condition was found, it
+// returns a copy of the condition and true, otherwise it returns an empty
+// struct and false.
+func GetInfrastructureReady(cluster *capi.Cluster) (capi.Condition, bool) {
+	infrastructureReady := capiconditions.Get(cluster, InfrastructureReady)
+
+	if infrastructureReady != nil {
+		return *infrastructureReady, true
+	} else {
+		return capi.Condition{}, false
+	}
+}
+
 // IsInfrastructureReadyTrue checks if specified object is in InfrastructureReady
 // condition (if InfrastructureReady condition is set with status True).
 func IsInfrastructureReadyTrue(object Object) bool {

@@ -48,7 +48,7 @@ const (
 
 // GetControlPlaneReady tries to get ControlPlaneReady condition from the
 // specified Cluster CR. If the ControlPlaneReady condition was found, it
-// returns a copy of the condition and true, otherwise it returns and empty
+// returns a copy of the condition and true, otherwise it returns an empty
 // struct and false.
 func GetControlPlaneReady(cluster *capi.Cluster) (capi.Condition, bool) {
 	controlPlaneReady := capiconditions.Get(cluster, ControlPlaneReady)

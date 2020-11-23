@@ -2,9 +2,90 @@ package conditions
 
 import (
 	"testing"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
+
+func TestGetInfrastructureReady(t *testing.T) {
+	testTime := time.Now()
+
+	testCases := []struct {
+		name              string
+		expectedCondition *capi.Condition
+	}{
+		{
+			name: "case 0: InfrastructureReady with Status=True is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               InfrastructureReady,
+				Status:             corev1.ConditionTrue,
+				LastTransitionTime: metav1.NewTime(testTime),
+			},
+		},
+		{
+			name: "case 1: InfrastructureReady with Status=False is correctly returned",
+			expectedCondition: &capi.Condition{
+				Type:               InfrastructureReady,
+				Status:             corev1.ConditionFalse,
+				LastTransitionTime: metav1.NewTime(testTime),
+				Severity:           capi.ConditionSeverityWarning,
+				Reason:             "FooBar",
+				Message:            "Stuff happened",
+			},
+		},
+		{
+			name:              "case 2: Condition is neither set nor returned",
+			expectedCondition: nil,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			// arrange
+			t.Log(tc.name)
+			var cluster *capi.Cluster
+			if tc.expectedCondition != nil {
+				cluster = &capi.Cluster{
+					Status: capi.ClusterStatus{
+						Conditions: capi.Conditions{*tc.expectedCondition},
+					},
+				}
+			} else {
+				cluster = &capi.Cluster{}
+			}
+
+			// act
+			infrastructureReady, conditionWasSet := GetInfrastructureReady(cluster)
+
+			// assert
+			if tc.expectedCondition != nil && conditionWasSet {
+				areEqual := infrastructureReady.Type == tc.expectedCondition.Type &&
+					infrastructureReady.Status == tc.expectedCondition.Status &&
+					infrastructureReady.Severity == tc.expectedCondition.Severity &&
+					infrastructureReady.Reason == tc.expectedCondition.Reason &&
+					infrastructureReady.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+
+				if !areEqual {
+					t.Logf(
+						"InfrastructureReady was not set correctly, got %s, expected %s",
+						sprintCondition(&infrastructureReady),
+						sprintCondition(tc.expectedCondition))
+					t.Fail()
+				}
+			} else if tc.expectedCondition == nil && !conditionWasSet {
+				// all good
+			} else if tc.expectedCondition != nil && !conditionWasSet {
+				t.Logf("InfrastructureReady was not set, expected %s", sprintCondition(tc.expectedCondition))
+				t.Fail()
+			} else if tc.expectedCondition == nil && conditionWasSet {
+				t.Logf("InfrastructureReady was not set to %s, expected nil", sprintCondition(&infrastructureReady))
+				t.Fail()
+			}
+		})
+	}
+}
 
 func Test_IsInfrastructureReadyTrue(t *testing.T) {
 	testCases := []struct {
