@@ -68,9 +68,22 @@ func IsControlPlaneReadyTrue(cluster *capi.Cluster) bool {
 
 // IsControlPlaneReadyFalse checks if specified cluster is not in
 // ControlPlaneReady condition (if ControlPlaneReady condition is set with
-// status False).
-func IsControlPlaneReadyFalse(cluster *capi.Cluster) bool {
-	return capiconditions.IsFalse(cluster, ControlPlaneReady)
+// status False) and if optionally specified checks are successful.
+func IsControlPlaneReadyFalse(cluster *capi.Cluster, checkOptions ...CheckOption) bool {
+	condition := capiconditions.Get(cluster, ControlPlaneReady)
+	if !IsFalse(condition) {
+		// Condition is not set or it does not have status False
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(condition) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsControlPlaneReadyUnknown checks if it is unknown whether the specified
