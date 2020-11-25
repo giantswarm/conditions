@@ -329,7 +329,7 @@ func TestUpdateInfrastructureReady(t *testing.T) {
 			// assert
 			infrastructureReady, ok := GetInfrastructureReady(tc.cluster)
 			if ok {
-				if !AreEqual(&infrastructureReady, &tc.expectedCondition) {
+				if !AreEquivalent(&infrastructureReady, &tc.expectedCondition) {
 					t.Logf(
 						"InfrastructureReady was not set correctly, got %s, expected %s",
 						sprintCondition(&infrastructureReady),

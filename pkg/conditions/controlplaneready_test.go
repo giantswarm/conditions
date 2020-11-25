@@ -323,7 +323,7 @@ func TestUpdateControlPlaneReady(t *testing.T) {
 			// assert
 			controlPlaneReady, ok := GetControlPlaneReady(tc.cluster)
 			if ok {
-				if !AreEqual(&controlPlaneReady, &tc.expectedCondition) {
+				if !AreEquivalent(&controlPlaneReady, &tc.expectedCondition) {
 					t.Logf(
 						"ControlPlaneReady was not set correctly, got %s, expected %s",
 						sprintCondition(&controlPlaneReady),

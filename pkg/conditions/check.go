@@ -61,12 +61,12 @@ func WithoutSeverity() CheckOption {
 	return WithSeverity(capi.ConditionSeverityNone)
 }
 
-// AreEqual compares specified conditions.
+// AreEquivalent compares specified conditions.
 //
 // If both are nil, it returns true. If only one of them is nil, it returns
 // false. If both are different than nil, it compares Type, Status, Severity
 // and Reason fields, while it ignores LastTransitionTime and Message.
-func AreEqual(c1, c2 *capi.Condition) bool {
+func AreEquivalent(c1, c2 *capi.Condition) bool {
 	// Both are nil
 	if c1 == nil && c2 == nil {
 		return true
@@ -84,4 +84,30 @@ func AreEqual(c1, c2 *capi.Condition) bool {
 		c1.Reason == c2.Reason
 
 	return equal
+}
+
+// AreEqual checks if two conditions are equal (identical).
+//
+// If both are nil, it returns true. If only one of them is nil, it returns
+// false. If both are different than nil, it compares all fields: Type, Status,
+// Severity, Reason, LastTransitionTime and Message.
+func AreEqual(c1, c2 *capi.Condition) bool {
+	// Both are nil
+	if c1 == nil && c2 == nil {
+		return true
+	}
+
+	// Only one is nil
+	if c1 == nil || c2 == nil {
+		return false
+	}
+
+	areEqual := c1.Type == c2.Type &&
+		c1.Status == c2.Status &&
+		c1.Severity == c2.Severity &&
+		c1.Reason == c2.Reason &&
+		c1.LastTransitionTime.Equal(&c2.LastTransitionTime) &&
+		c1.Message == c2.Message
+
+	return areEqual
 }
