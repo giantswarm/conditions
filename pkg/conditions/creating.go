@@ -1,8 +1,6 @@
 package conditions
 
 import (
-	"time"
-
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 	capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 )
@@ -89,35 +87,4 @@ func WithCreationCompletedReason() CheckOption {
 // reason is set to ExistingObject.
 func WithExistingObjectReason() CheckOption {
 	return WithReason(ExistingObjectReason)
-}
-
-// MarkCreatingTrue sets Creating condition with status True.
-func MarkCreatingTrue(object Object) {
-	capiconditions.MarkTrue(object, Creating)
-}
-
-// MarkCreatingFalseWithCreationCompleted sets Creating condition with status
-// False, reason CreationCompleted, severity Info and a message informing how
-// long the creation took.
-func MarkCreatingFalseWithCreationCompleted(object Object) {
-	creationDuration := time.Since(object.GetCreationTimestamp().Time)
-	capiconditions.MarkFalse(
-		object,
-		Creating,
-		CreationCompletedReason,
-		capi.ConditionSeverityInfo,
-		"Cluster creation has been completed in %s",
-		creationDuration)
-}
-
-// MarkCreatingFalseForExistingObject sets Creating condition with status
-// False, reason ExistingObject, severity Info and a message informing that the
-// object was already created.
-func MarkCreatingFalseForExistingObject(object Object) {
-	capiconditions.MarkFalse(
-		object,
-		Creating,
-		ExistingObjectReason,
-		capi.ConditionSeverityInfo,
-		"Object was already created")
 }
