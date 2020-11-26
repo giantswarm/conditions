@@ -7,7 +7,7 @@ import (
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 )
 
-func Test_IsNodePoolsReadyTrue(t *testing.T) {
+func TestIsNodePoolsReadyTrue(t *testing.T) {
 	testCases := []struct {
 		name           string
 		object         *capi.Cluster
@@ -53,7 +53,7 @@ func Test_IsNodePoolsReadyTrue(t *testing.T) {
 	}
 }
 
-func Test_IsNodePoolsReadyFalse(t *testing.T) {
+func TestIsNodePoolsReadyFalse(t *testing.T) {
 	testCases := []struct {
 		name           string
 		object         *capi.Cluster
@@ -99,7 +99,7 @@ func Test_IsNodePoolsReadyFalse(t *testing.T) {
 	}
 }
 
-func Test_IsNodePoolsReadyUnknown(t *testing.T) {
+func TestIsNodePoolsReadyUnknown(t *testing.T) {
 	testCases := []struct {
 		name           string
 		expectedOutput bool

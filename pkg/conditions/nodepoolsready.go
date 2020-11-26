@@ -49,28 +49,3 @@ func IsNodePoolsReadyFalse(cluster *capi.Cluster, checkOptions ...CheckOption) b
 func IsNodePoolsReadyUnknown(cluster *capi.Cluster) bool {
 	return capiconditions.IsUnknown(cluster, NodePoolsReady)
 }
-
-// UpdateNodePoolsReady sets NodePoolsReady condition on specified cluster
-// by aggregating Ready conditions from specified node pool objects.
-//
-// If node pool objects are found, cluster NodePoolsReady is set to with status
-// False and reason NodePoolsNotFoundReason.
-func UpdateNodePoolsReady(cluster *capi.Cluster, nodePools []capiconditions.Getter) {
-	if len(nodePools) == 0 {
-		capiconditions.MarkFalse(
-			cluster,
-			NodePoolsReady,
-			NodePoolsNotFoundReason,
-			capi.ConditionSeverityWarning,
-			"Node pools are not found for Cluster %s/%s",
-			cluster.Namespace, cluster.Name)
-		return
-	}
-
-	capiconditions.SetAggregate(
-		cluster,
-		NodePoolsReady,
-		nodePools,
-		capiconditions.WithStepCounter(),
-		capiconditions.AddSourceRef())
-}
