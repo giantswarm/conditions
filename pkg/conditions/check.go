@@ -3,6 +3,7 @@ package conditions
 import (
 	corev1 "k8s.io/api/core/v1"
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
+	capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 )
 
 // IsTrue checks if specified condition is not nil and has Status set to True.
@@ -110,4 +111,23 @@ func AreEqual(c1, c2 *capi.Condition) bool {
 		c1.Message == c2.Message
 
 	return areEqual
+}
+
+func IsUnsupported(from capiconditions.Getter, t capi.ConditionType) bool {
+	condition := capiconditions.Get(from, t)
+
+	// We expect that condition is not set and that case should be handled
+	// separately where necessary.
+	if condition == nil {
+		return false
+	}
+
+	switch condition.Status {
+	// We expect currently known upstream values: True, False and Unknown.
+	case corev1.ConditionTrue, corev1.ConditionFalse, corev1.ConditionUnknown:
+		return false
+	// Everything else is not supported.
+	default:
+		return true
+	}
 }
