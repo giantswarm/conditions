@@ -1,6 +1,8 @@
 package conditions
 
 import (
+	"time"
+
 	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
 	capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 )
@@ -42,6 +44,10 @@ const (
 	// provider-specific infrastructure object is not found. When using this
 	// reason, the condition severity should be set to Warning.
 	InfrastructureObjectNotFoundReason = "InfrastructureObjectNotFound"
+
+	// Waiting time during which InfrastructureReady is set to False with
+	// severity Info. After this threshold time, severity Warning is used.
+	WaitingForInfrastructureWarningThresholdTime = 10 * time.Minute
 )
 
 // GetInfrastructureReady tries to get InfrastructureReady condition from the
