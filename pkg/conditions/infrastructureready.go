@@ -31,6 +31,12 @@ const (
 	// Below are condition reasons for InfrastructureReady that are
 	// usually set when condition status is set to False.
 
+	// InfrastructureReferenceNotSetReason is a condition reason that is set
+	// when InfrastructureReady is set with status False because object does
+	// not have infrastructure reference set. When using this reason, the
+	// condition severity should be set to Warning.
+	InfrastructureReferenceNotSetReason = "InfrastructureReferenceNotSet"
+
 	// InfrastructureObjectNotFoundReason is a condition reason that is set
 	// when InfrastructureReady is set with status False because corresponding
 	// provider-specific infrastructure object is not found. When using this
