@@ -57,20 +57,16 @@ func TestGetCreating(t *testing.T) {
 			}
 
 			// act
-			condition, conditionWasSet := GetCreating(cluster)
+			outputCondition, conditionWasSet := GetCreating(cluster)
 
 			// assert
 			if tc.expectedCondition != nil && conditionWasSet {
-				areEqual := condition.Type == tc.expectedCondition.Type &&
-					condition.Status == tc.expectedCondition.Status &&
-					condition.Severity == tc.expectedCondition.Severity &&
-					condition.Reason == tc.expectedCondition.Reason &&
-					condition.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+				areEqual := AreEqual(&outputCondition, tc.expectedCondition)
 
 				if !areEqual {
 					t.Logf(
 						"Creating was not set correctly, got %s, expected %s",
-						sprintCondition(&condition),
+						sprintCondition(&outputCondition),
 						sprintCondition(tc.expectedCondition))
 					t.Fail()
 				}
@@ -80,7 +76,7 @@ func TestGetCreating(t *testing.T) {
 				t.Logf("Creating was not set, expected %s", sprintCondition(tc.expectedCondition))
 				t.Fail()
 			} else if tc.expectedCondition == nil && conditionWasSet {
-				t.Logf("Creating was not set to %s, expected nil", sprintCondition(&condition))
+				t.Logf("Creating was not set to %s, expected nil", sprintCondition(&outputCondition))
 				t.Fail()
 			}
 		})
@@ -130,7 +126,7 @@ func TestIsCreatingTrue(t *testing.T) {
 					"expected IsCreatingTrue to return %t, got %t for %s",
 					tc.expectedOutput,
 					result,
-					conditionString(tc.object, Creating))
+					sprintConditionForObject(tc.object, Creating))
 				t.Fail()
 			}
 		})
@@ -192,7 +188,7 @@ func TestIsCreatingFalseReturnsTrue(t *testing.T) {
 			if result != true {
 				t.Logf(
 					"expected IsCreatingFalse to return true, got false for %s",
-					conditionString(tc.object, Creating))
+					sprintConditionForObject(tc.object, Creating))
 
 				t.Fail()
 			}
@@ -266,7 +262,7 @@ func TestIsCreatingFalseReturnsFalse(t *testing.T) {
 			if result != false {
 				t.Logf(
 					"expected IsCreatingFalse to return false, got true for %s",
-					conditionString(tc.object, Creating))
+					sprintConditionForObject(tc.object, Creating))
 				t.Fail()
 			}
 		})
@@ -316,7 +312,7 @@ func TestIsCreatingUnknown(t *testing.T) {
 					"expected IsCreatingUnknown to return %t, got %t for %s",
 					tc.expectedOutput,
 					result,
-					conditionString(tc.object, Creating))
+					sprintConditionForObject(tc.object, Creating))
 				t.Fail()
 			}
 		})

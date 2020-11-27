@@ -57,20 +57,16 @@ func TestGetInfrastructureReady(t *testing.T) {
 			}
 
 			// act
-			infrastructureReady, conditionWasSet := GetInfrastructureReady(cluster)
+			outputCondition, conditionWasSet := GetInfrastructureReady(cluster)
 
 			// assert
 			if tc.expectedCondition != nil && conditionWasSet {
-				areEqual := infrastructureReady.Type == tc.expectedCondition.Type &&
-					infrastructureReady.Status == tc.expectedCondition.Status &&
-					infrastructureReady.Severity == tc.expectedCondition.Severity &&
-					infrastructureReady.Reason == tc.expectedCondition.Reason &&
-					infrastructureReady.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+				areEqual := AreEqual(&outputCondition, tc.expectedCondition)
 
 				if !areEqual {
 					t.Logf(
 						"InfrastructureReady was not set correctly, got %s, expected %s",
-						sprintCondition(&infrastructureReady),
+						sprintCondition(&outputCondition),
 						sprintCondition(tc.expectedCondition))
 					t.Fail()
 				}
@@ -80,7 +76,7 @@ func TestGetInfrastructureReady(t *testing.T) {
 				t.Logf("InfrastructureReady was not set, expected %s", sprintCondition(tc.expectedCondition))
 				t.Fail()
 			} else if tc.expectedCondition == nil && conditionWasSet {
-				t.Logf("InfrastructureReady was not set to %s, expected nil", sprintCondition(&infrastructureReady))
+				t.Logf("InfrastructureReady was not set to %s, expected nil", sprintCondition(&outputCondition))
 				t.Fail()
 			}
 		})

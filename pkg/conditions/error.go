@@ -9,6 +9,10 @@ import (
 	capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 )
 
+const (
+	conditionNotSet = "condition not set"
+)
+
 var UnexpectedConditionStatusError = &microerror.Error{
 	Kind: "UnexpectedConditionStatus",
 }
@@ -19,7 +23,7 @@ func UnexpectedConditionStatusErrorMessage(cr Object, t capi.ConditionType) stri
 	if c != nil {
 		got = string(c.Status)
 	} else {
-		got = "condition not set"
+		got = conditionNotSet
 	}
 
 	return fmt.Sprintf("Unexpected status for condition %s, got %s", t, got)
@@ -44,7 +48,7 @@ func ExpectedStatusErrorMessage(cr Object, conditionType capi.ConditionType, exp
 	if c != nil {
 		got = string(c.Status)
 	} else {
-		got = "condition not set"
+		got = conditionNotSet
 	}
 
 	return fmt.Sprintf("Expected that condition %s on Object %T has status %s, but got %s", conditionType, cr, expectedStatus, got)

@@ -57,20 +57,16 @@ func TestGetControlPlaneReady(t *testing.T) {
 			}
 
 			// act
-			controlPlaneReady, conditionWasSet := GetControlPlaneReady(cluster)
+			outputCondition, conditionWasSet := GetControlPlaneReady(cluster)
 
 			// assert
 			if tc.expectedCondition != nil && conditionWasSet {
-				areEqual := controlPlaneReady.Type == tc.expectedCondition.Type &&
-					controlPlaneReady.Status == tc.expectedCondition.Status &&
-					controlPlaneReady.Severity == tc.expectedCondition.Severity &&
-					controlPlaneReady.Reason == tc.expectedCondition.Reason &&
-					controlPlaneReady.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+				areEqual := AreEqual(&outputCondition, tc.expectedCondition)
 
 				if !areEqual {
 					t.Logf(
 						"ControlPlaneReady was not set correctly, got %s, expected %s",
-						sprintCondition(&controlPlaneReady),
+						sprintCondition(&outputCondition),
 						sprintCondition(tc.expectedCondition))
 					t.Fail()
 				}
@@ -80,7 +76,7 @@ func TestGetControlPlaneReady(t *testing.T) {
 				t.Logf("ControlPlaneReady was not set, expected %s", sprintCondition(tc.expectedCondition))
 				t.Fail()
 			} else if tc.expectedCondition == nil && conditionWasSet {
-				t.Logf("ControlPlaneReady was not set to %s, expected nil", sprintCondition(&controlPlaneReady))
+				t.Logf("ControlPlaneReady was not set to %s, expected nil", sprintCondition(&outputCondition))
 				t.Fail()
 			}
 		})

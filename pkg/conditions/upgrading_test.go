@@ -58,20 +58,16 @@ func TestGetUpgrading(t *testing.T) {
 			}
 
 			// act
-			condition, conditionWasSet := GetUpgrading(cr)
+			outputCondition, conditionWasSet := GetUpgrading(cr)
 
 			// assert
 			if tc.expectedCondition != nil && conditionWasSet {
-				areEqual := condition.Type == tc.expectedCondition.Type &&
-					condition.Status == tc.expectedCondition.Status &&
-					condition.Severity == tc.expectedCondition.Severity &&
-					condition.Reason == tc.expectedCondition.Reason &&
-					condition.LastTransitionTime.Equal(&tc.expectedCondition.LastTransitionTime)
+				areEqual := AreEqual(&outputCondition, tc.expectedCondition)
 
 				if !areEqual {
 					t.Logf(
 						"Upgrading was not set correctly, got %s, expected %s",
-						sprintCondition(&condition),
+						sprintCondition(&outputCondition),
 						sprintCondition(tc.expectedCondition))
 					t.Fail()
 				}
@@ -81,7 +77,7 @@ func TestGetUpgrading(t *testing.T) {
 				t.Logf("Upgrading was not set, expected %s", sprintCondition(tc.expectedCondition))
 				t.Fail()
 			} else if tc.expectedCondition == nil && conditionWasSet {
-				t.Logf("Upgrading was not set to %s, expected nil", sprintCondition(&condition))
+				t.Logf("Upgrading was not set to %s, expected nil", sprintCondition(&outputCondition))
 				t.Fail()
 			}
 		})
