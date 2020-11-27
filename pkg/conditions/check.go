@@ -12,8 +12,21 @@ func IsTrue(condition *capi.Condition) bool {
 }
 
 // IsFalse checks if specified condition is not nil and has Status set to False.
-func IsFalse(condition *capi.Condition) bool {
-	return condition != nil && condition.Status == corev1.ConditionFalse
+func IsFalse(condition *capi.Condition, checkOptions ...CheckOption) bool {
+	desiredStatusFalseIsSet := condition != nil && condition.Status == corev1.ConditionFalse
+
+	if !desiredStatusFalseIsSet {
+		return false
+	}
+
+	for _, checkOption := range checkOptions {
+		if !checkOption(condition) {
+			// additional check has failed
+			return false
+		}
+	}
+
+	return true
 }
 
 // IsUnknown checks if specified condition is either nil or has Status set to
