@@ -30,7 +30,7 @@ func Test_IsReadyTrue(t *testing.T) {
 		},
 		{
 			name:           "case 3: IsReadyTrue returns false for CR without condition Ready",
-			object:         machinePoolWithoutConditions(),
+			object:         clusterWithoutConditions(),
 			expectedOutput: false,
 		},
 		{
@@ -131,7 +131,7 @@ func Test_IsReadyUnknown(t *testing.T) {
 		},
 		{
 			name:           "case 3: IsReadyUnknown returns true for CR without condition Ready",
-			object:         machinePoolWithoutConditions(),
+			object:         machineWithoutConditions(),
 			expectedOutput: true,
 		},
 		{
