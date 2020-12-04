@@ -41,8 +41,9 @@ const (
 
 	// InfrastructureObjectNotFoundReason is a condition reason that is set
 	// when InfrastructureReady is set with status False because corresponding
-	// provider-specific infrastructure object is not found. When using this
-	// reason, the condition severity should be set to Warning.
+	// provider-specific infrastructure object is not found, but infrastructure
+	// reference is set. When using this reason, the condition severity should
+	// be set to Warning.
 	InfrastructureObjectNotFoundReason = "InfrastructureObjectNotFound"
 
 	// Waiting time during which InfrastructureReady is set to False with
