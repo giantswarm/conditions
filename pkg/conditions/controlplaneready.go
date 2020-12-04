@@ -43,8 +43,7 @@ const (
 	// ControlPlaneObjectNotFoundReason is a condition reason that is set when
 	// ControlPlaneReady is set with status False because control plane object
 	// is not found, but control plane reference is set. When using this reason,
-	// the condition severity should be set to Warning (in the future this might
-	// change to Error).
+	// the condition severity should be set to Warning.
 	ControlPlaneObjectNotFoundReason = "ControlPlaneObjectNotFound"
 
 	// Waiting time during which ControlPlaneReady is set to False with
