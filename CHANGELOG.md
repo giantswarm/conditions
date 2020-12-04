@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Add `UpgradePending` and `ControlPlaneReferenceNotSet` condition reasons.
+- Update code docs.
+
 ## [0.1.0] - 2020-11-30
 
 - Rename template repo.
