@@ -34,10 +34,17 @@ const (
 	// Below are condition reasons for ControlPlaneReady that are usually set
 	// when condition status is set to False.
 
+	// ControlPlaneReferenceNotSetReason is a condition reason that is set when
+	// ControlPlaneReady is set with status False because control plane reference
+	// is not set on Cluster object. When using this reason, the condition
+	// severity should be set to Warning.
+	ControlPlaneReferenceNotSetReason = "ControlPlaneReferenceNotSet"
+
 	// ControlPlaneObjectNotFoundReason is a condition reason that is set when
 	// ControlPlaneReady is set with status False because control plane object
-	// is not found. When using this reason, the condition severity should be
-	// set to Warning.
+	// is not found, but control plane reference is set. When using this reason,
+	// the condition severity should be set to Warning (in the future this might
+	// change to Error).
 	ControlPlaneObjectNotFoundReason = "ControlPlaneObjectNotFound"
 
 	// Waiting time during which ControlPlaneReady is set to False with

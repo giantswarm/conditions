@@ -22,6 +22,11 @@ const (
 	// This is usually during or after creation, but can also be after
 	// restoring a CR from the backup.
 	UpgradeNotStartedReason = "UpgradeNotStarted"
+
+	// UpgradePendingReason is set when the upgrade has not started yet,
+	// but it is pending and it will start soon, because owner object has
+	// Upgrading condition with status set to True.
+	UpgradePendingReason = "UpgradePending"
 )
 
 // GetUpgrading tries to get Upgrading condition from the specified object. If
