@@ -9,7 +9,7 @@ require (
 	golang.org/x/tools v0.0.0-20200103221440-774c71fcf114 // indirect
 	k8s.io/api v0.18.9
 	k8s.io/apimachinery v0.18.9
-	sigs.k8s.io/cluster-api v0.3.10
+	sigs.k8s.io/cluster-api v0.3.12
 )
 
 replace sigs.k8s.io/cluster-api v0.3.10 => github.com/giantswarm/cluster-api v0.3.10-gs
