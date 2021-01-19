@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Check functions for `MachinePool` `ReplicasReady` condition
+
 ## [0.2.0] - 2020-12-04
 
 ### Added
