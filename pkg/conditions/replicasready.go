@@ -1,8 +1,8 @@
 package conditions
 
 import (
-	capi "sigs.k8s.io/cluster-api/api/v1alpha3"
-	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha3"
+	capi "sigs.k8s.io/cluster-api/api/v1alpha4"
+	capiexp "sigs.k8s.io/cluster-api/exp/api/v1alpha4"
 	capiconditions "sigs.k8s.io/cluster-api/util/conditions"
 )
 
