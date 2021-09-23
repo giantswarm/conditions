@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2021-09-23
+
 ### Changed
 
 - Updated capi to v0.4.2
@@ -32,7 +34,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add provider-independent conditions: Creating, Upgrading, InfrastructureReady, ControlPlaneReady, NodePoolsReady
 - Add Ready condition check functions
 
-[Unreleased]: https://github.com/giantswarm/conditions/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/giantswarm/conditions/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/giantswarm/conditions/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/giantswarm/conditions/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/giantswarm/conditions/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/giantswarm/conditions/releases/tag/v0.1.0
