@@ -6,7 +6,7 @@ require (
 	github.com/giantswarm/microerror v0.3.0
 	k8s.io/api v0.21.3
 	k8s.io/apimachinery v0.21.3
-	sigs.k8s.io/cluster-api v0.4.2
+	sigs.k8s.io/cluster-api v0.99.99
 )
 
 replace (
