@@ -4,8 +4,8 @@ go 1.17
 
 require (
 	github.com/giantswarm/microerror v0.4.0
-	k8s.io/api v0.22.2
-	k8s.io/apimachinery v0.22.2
+	k8s.io/api v0.29.0
+	k8s.io/apimachinery v0.29.0
 	sigs.k8s.io/cluster-api v1.0.5
 )
 
